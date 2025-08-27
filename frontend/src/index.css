@@ -5,3 +5,7 @@
 }
 
 @plugin "@tailwindcss/typography";
+
+html {
+  scrollbar-gutter: auto !important;
+}
