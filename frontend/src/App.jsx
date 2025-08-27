@@ -12,9 +12,9 @@ function App() {
         <Route
           path="*"
           element={
-            <div className="flex flex-col justify-center items-center h-screen w-screen">
-              <h1 className="font-bold text-7xl mb-4">404</h1>
-              <p className="text-2xl mb-6">Page Not Found</p>
+            <div className="flex h-screen w-screen flex-col items-center justify-center">
+              <h1 className="mb-4 text-7xl font-bold">404</h1>
+              <p className="mb-6 text-2xl">Page Not Found</p>
               <a href="/" className="btn">
                 Go to Home
               </a>

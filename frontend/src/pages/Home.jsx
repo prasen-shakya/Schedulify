@@ -5,11 +5,11 @@ export const Home = () => {
     <>
       <EventModal />
 
-      <div className="py-5 px-5 flex-1 flex justify-center items-center flex-col gap-2">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5 py-5">
         <h1 className="text-4xl font-bold">
           Schedule Events Without A Hassle.
         </h1>
-        <p className="text-secondary ">
+        <p className="text-secondary">
           Schedule group events with ease without having to worry about
           scheduling conflicts.
         </p>

@@ -3,7 +3,7 @@ import { Navbar } from "./Navbar";
 
 const Layout = () => {
   return (
-    <div className="min-h-dvh flex flex-col">
+    <div className="flex min-h-dvh flex-col">
       <Navbar />
       <Outlet />
     </div>
