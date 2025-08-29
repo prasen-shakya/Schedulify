@@ -5,7 +5,7 @@ export const Home = () => {
     <>
       <EventModal />
 
-      <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5 py-5">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2 p-5">
         <h1 className="text-4xl font-bold">
           Schedule Events Without A Hassle.
         </h1>

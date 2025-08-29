@@ -1,13 +1,15 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import Layout from "./components/Layout";
+import { EventPage } from "./pages/EventPage";
 import { Home } from "./pages/Home";
 
-function App() {
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
+          <Route path="event/:eventId" element={<EventPage />} />
         </Route>
         <Route
           path="*"
@@ -24,6 +26,6 @@ function App() {
       </Routes>
     </BrowserRouter>
   );
-}
+};
 
 export default App;
