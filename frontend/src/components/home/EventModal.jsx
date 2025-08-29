@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export const EventModal = () => {
   // Get all of the times from 12 am to 11 pm in a string format
@@ -12,6 +13,8 @@ export const EventModal = () => {
   const [startTime, setStartTime] = useState("9 am");
   const [endTime, setEndTime] = useState("5 pm");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   // Converts string time to a 24-hour format
   const to24Hour = (timeStr) => {
@@ -36,6 +39,7 @@ export const EventModal = () => {
     }
 
     // TODO: CONNECT TO THE BACKEND
+    navigate(`/event/12345`);
   };
 
   return (
