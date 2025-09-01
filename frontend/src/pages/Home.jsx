@@ -1,4 +1,4 @@
-import { EventModal } from "../components/home/EventModal";
+import EventModal from "../components/home/EventModal";
 
 export const Home = () => {
   return (

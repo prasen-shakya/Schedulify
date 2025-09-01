@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-export const EventModal = () => {
+const EventModal = () => {
   // Get all of the times from 12 am to 11 pm in a string format
   const times = Array.from({ length: 24 }, (_, h) => {
     const hour = h % 12 === 0 ? 12 : h % 12;
@@ -121,3 +121,5 @@ export const EventModal = () => {
     </dialog>
   );
 };
+
+export default EventModal;
