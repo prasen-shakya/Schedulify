@@ -10,7 +10,7 @@ export const Home = () => {
           Schedule Events Without A Hassle.
         </h1>
         <p className="text-secondary">
-          Schedule group events with ease without having to worry about
+          Schedule your group events with ease without having to worry about
           scheduling conflicts.
         </p>
         <button
