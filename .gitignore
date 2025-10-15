@@ -24,5 +24,4 @@ dist-ssr
 *.sw?
 
 #backend files
-backened
-backend/.env
+backened/.env
