@@ -16,12 +16,7 @@ function checkPassword(password) {
     else if (!hasCap(password)) {
         return false;
     }
-    else if (!hasNum(string)) {
-        return false;
-    }
-    else {
-        return true;
-    }
+    else return hasNum(string);
 }
 
 /**
