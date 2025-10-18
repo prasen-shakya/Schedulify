@@ -10,6 +10,7 @@ const EventModal = () => {
   });
 
   const [eventTitle, setEventTitle] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
   const [startTime, setStartTime] = useState("9 am");
   const [endTime, setEndTime] = useState("5 pm");
   const [error, setError] = useState("");
@@ -24,7 +25,8 @@ const EventModal = () => {
     return hour;
   };
 
-  const handleSubmit = (e) => {
+  const handleEventCreation = (e) => {
+    // preventDefault stops the page from refreshing
     e.preventDefault();
     setError("");
 
@@ -33,13 +35,38 @@ const EventModal = () => {
       return;
     }
 
+    if (startTime == null || endTime == null) {
+      setError("Start and end times are required.");
+      return;
+    }
+
     if (to24Hour(endTime) <= to24Hour(startTime)) {
       setError("End time must be later than start time.");
       return;
     }
 
-    // TODO: CONNECT TO THE BACKEND
-    navigate(`/event/12345`);
+    // TODO: CONNECT TO THE BACKEND AND CREATE THE EVENT
+    // For now, we will just navigate to a dummy event page
+    fetch("http://localhost:3000/api/createEvent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: eventTitle,
+        description: eventDescription,
+        startTime: to24Hour(startTime),
+        endTime: to24Hour(endTime),
+      }),
+    }).then((response) => {
+      console.log("Event created");
+
+      if (response.ok) {
+        navigate("/event/12345");
+      } else {
+        setError("Failed to create event. Please try again.");
+      }
+    });
   };
 
   return (
@@ -61,7 +88,7 @@ const EventModal = () => {
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleEventCreation} className="flex flex-col gap-4">
           {/* Event Name */}
           <div className="flex flex-col gap-2">
             <label htmlFor="event-name">Event Name</label>
@@ -72,6 +99,18 @@ const EventModal = () => {
               value={eventTitle}
               onChange={(e) => setEventTitle(e.target.value)}
               id="event-name"
+            />
+          </div>
+
+          {/* Event Description */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="event-description">Event Description</label>
+            <textarea
+              className="textarea h-24 w-full"
+              placeholder="Event Description..."
+              value={eventDescription}
+              onChange={(e) => setEventDescription(e.target.value)}
+              id="event-description"
             />
           </div>
 
