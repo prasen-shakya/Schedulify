@@ -47,26 +47,7 @@ const EventModal = () => {
 
     // TODO: CONNECT TO THE BACKEND AND CREATE THE EVENT
     // For now, we will just navigate to a dummy event page
-    fetch("http://localhost:3000/api/createEvent", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: eventTitle,
-        description: eventDescription,
-        startTime: to24Hour(startTime),
-        endTime: to24Hour(endTime),
-      }),
-    }).then((response) => {
-      console.log("Event created");
-
-      if (response.ok) {
-        navigate("/event/12345");
-      } else {
-        setError("Failed to create event. Please try again.");
-      }
-    });
+    navigate("/event/12345");
   };
 
   return (

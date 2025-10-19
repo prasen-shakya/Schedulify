@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const AuthenticationModal = () => {
+  const { signIn } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -19,6 +22,7 @@ const AuthenticationModal = () => {
     e.preventDefault();
 
     console.log(isLogin ? "Logging in with" : "Registering with", formData);
+    signIn();
     document.getElementById("authentication-modal").close();
   };
 
