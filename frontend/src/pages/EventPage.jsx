@@ -1,10 +1,16 @@
 import { useParams } from "react-router";
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
 import weekView from "@/images/week-view.png";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const EventPage = () => {
   // We will use eventId later on as the primary key for the event database
   const { eventId } = useParams();
+  const { requireAuth } = useAuth();
+
+  const showAvailabilityModal = () => {
+    document.getElementById("availability-modal").showModal();
+  };
 
   return (
     <>
@@ -15,9 +21,7 @@ export const EventPage = () => {
           <div className="flex gap-4">
             <button className="btn btn-secondary btn-outline">Copy Link</button>
             <button
-              onClick={() =>
-                document.getElementById("availability-modal").showModal()
-              }
+              onClick={() => requireAuth(showAvailabilityModal)}
               className="btn btn-primary w-44"
             >
               Add Availability
