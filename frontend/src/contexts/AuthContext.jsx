@@ -1,22 +1,87 @@
-import { createContext, useContext, useState } from "react";
+import axios from "axios";
+import { createContext, useContext, useEffect, useState } from "react";
 import AuthenticationModal from "../components/authentication/AuthenticationModal";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Always send cookies with axios requests
+  axios.defaults.withCredentials = true;
+
+  // Check authentication on mount because JWT might expire
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:3000/api/checkAuthenticationStatus",
+        );
+        if (res.status === 200) {
+          setIsAuthenticated(true);
+          console.log(`User ${res.data.userId} is authenticated`);
+        }
+      } catch {
+        setIsAuthenticated(false);
+        console.log("User is not authenticated");
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   const showAuthenticationModal = () => {
     document.getElementById("authentication-modal").showModal();
   };
 
-  const signIn = () => {
-    setIsAuthenticated(true);
+  const signIn = async (email, password) => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/login", {
+        email,
+        password,
+      });
+
+      setIsAuthenticated(true);
+
+      return "success";
+    } catch (error) {
+      console.error(
+        "Login error:",
+        error.response ? error.response.data : error.message,
+      );
+      return error.response.data;
+    }
   };
 
-  const signOut = () => {
-    setUserId(null);
-    setIsAuthenticated(false);
+  const signOut = async () => {
+    try {
+      await axios.post("http://localhost:3000/api/logout");
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error(
+        "Logout error:",
+        error.response ? error.response.data : error.message,
+      );
+    }
+  };
+
+  const register = async (name, email, password) => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/register", {
+        name,
+        email,
+        password,
+      });
+      console.log("Registration successful:", response.data);
+      setIsAuthenticated(true);
+      return "success";
+    } catch (error) {
+      console.error(
+        "Registration error:",
+        error.response ? error.response.data : error.message,
+      );
+      return error.response?.data || { message: "Registration failed" };
+    }
   };
 
   const requireAuth = (onSuccess) => {
@@ -38,6 +103,7 @@ export const AuthProvider = ({ children }) => {
         showAuthenticationModal,
         signIn,
         signOut,
+        register,
       }}
     >
       <AuthenticationModal />
