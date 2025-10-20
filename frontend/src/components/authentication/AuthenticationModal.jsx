@@ -1,12 +1,13 @@
-import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 const AuthenticationModal = () => {
-  const { signIn } = useAuth();
+  const { signIn, register } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
-
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
   });
@@ -18,12 +19,27 @@ const AuthenticationModal = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(isLogin ? "Logging in with" : "Registering with", formData);
-    signIn();
-    document.getElementById("authentication-modal").close();
+    let success = false;
+
+    if (isLogin) {
+      success = await signIn(formData.email, formData.password);
+    } else {
+      success = await register(
+        formData.name,
+        formData.email,
+        formData.password,
+      );
+    }
+
+    if (success == "success") {
+      document.getElementById("authentication-modal").close();
+      setError("");
+    } else {
+      setError(success.message || "An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -61,30 +77,40 @@ const AuthenticationModal = () => {
 
         {/* Auth Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <label className="form-control w-full">
+          {!isLogin && (
             <input
-              type="email"
-              name="email"
-              placeholder="Email"
+              type="text"
+              name="name"
+              placeholder="Name"
               className="input input-bordered w-full"
               required
               onChange={handleChange}
-              value={formData.email}
+              value={formData.name}
               autoComplete="off"
             />
-          </label>
+          )}
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="input input-bordered w-full"
+            required
+            onChange={handleChange}
+            value={formData.email}
+            autoComplete="off"
+          />
 
-          <label className="form-control w-full">
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="input input-bordered w-full"
-              required
-              onChange={handleChange}
-              value={formData.password}
-            />
-          </label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            className="input input-bordered w-full"
+            required
+            onChange={handleChange}
+            value={formData.password}
+          />
+
+          {error && <p className="text-error text-sm">{error}</p>}
 
           <button type="submit" className="btn btn-primary mt-3">
             {isLogin ? "Login" : "Register"}
