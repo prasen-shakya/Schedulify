@@ -4,6 +4,21 @@ const { getDbConnection } = require("./database");
 
 const app = express();
 const port = 3000;
+const connectViaSSH = require("./db");
+
+//testing database connection
+(async () => {
+    try {
+        const connection = await connectViaSSH();
+        const [rows] = await connection.promise().query('SELECT * FROM User WHERE Name = "Myles"');
+        console.log(rows);
+        connection.end();
+    } catch (err) {
+        console.error('Connection error:', err);
+    }
+})();
+
+
 
 app.use(cors());
 app.use(express.json());
@@ -29,3 +44,4 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
     console.log(`🚀 Listening on port ${port}`);
 });
+
