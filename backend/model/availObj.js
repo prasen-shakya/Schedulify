@@ -1,8 +1,9 @@
 // this is the file for the availability class and functions
 
 class Availability {
-    constructor(owner, event, beginSlot, endSlot) {
-        this.owner = owner;
+    constructor(availID, ownerID, event, beginSlot, endSlot) {
+        this.availID = availID;
+        this.ownerID = ownerID;
         this.event = event;
         this.beginSlot = beginSlot;
         this.endSlot = endSlot;
@@ -20,5 +21,3 @@ class Availability {
 }
 
 export default Availability;
-export default modBeginSlot;
-export default modEndSlot;
