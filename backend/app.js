@@ -145,6 +145,53 @@ app.get("/api/checkAuthenticationStatus", authenticateToken, (req, res) => {
   res.status(200).json({ userId: req.user.userId, message: "Authenticated" });
 });
 
+
+/***************Individual Activity: Algorithm Design in Your Project ***************
+ ******************** START THIS ***********************************************************/
+app.get("/api/createEvent", authenticateToken,(req, res) => {})
+{
+    //connect to database
+    const connection = await connectViaSSH();
+
+    //test database connection
+    try {
+        const connection = await connectViaSSH();
+    } catch (err) {
+        console.error('Connection error:', err);
+    }
+
+    //get inputs from the request
+    const {name, description, startDate, endDate} = req.body;
+    const OragnizerID = req.user.userId;
+
+    //create the sql injection
+    const sqlCode = 'INSERT INTO Event (OrganizerID, Name, Description, StartDate, EndDate) ' +
+        `VALUE (${OragnizerID}, ${Name}, ${Description}, ${StartDate}, ${EndDate}); `;
+
+    //attempt to insert
+    try{
+        connection.query(sqlCode);
+        res.send("Created Event Successfully!");
+        res.json({EventId: EventId});
+    } catch (err) {
+        console.error('Failed to insert: ', err);
+        res.send("Failed to insert Event");
+        res.send("Error: " + err);
+    }
+
+    //close connection
+    connection.end();
+}
+
+app.get("/", (req, res) => {
+    res.send("Hello World");
+});
+
+app.listen(port, () => {
+    console.log(`Listening on PORT ${3000}`);
+});
+
+
 app.listen(port, () => {
   console.log(`🚀 Listening on port ${port}`);
 });
