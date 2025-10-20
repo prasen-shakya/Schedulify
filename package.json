@@ -1,7 +1,16 @@
 {
-  "dependencies": {
-    "dotenv": "^17.2.3",
-    "mysql2": "^3.15.2",
-    "ssh2": "^1.17.0"
-  }
+    "name": "schedulify",
+    "version": "1.0.0",
+    "description": "Schedulifyis a web application that simplifies scheduling group events",
+    "scripts": {
+        "frontend": "cd frontend && npm run dev",
+        "backend": "cd backend && node --watch app.js",
+        "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "concurrently": "^9.2.1"
+    }
 }

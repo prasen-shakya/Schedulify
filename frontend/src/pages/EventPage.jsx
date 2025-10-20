@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
-import AvailabilityModal from "../components/event-page/AvailabilityModal";
-import weekView from "../images/week-view.png";
+import AvailabilityModal from "@/components/event-page/AvailabilityModal";
+import weekView from "@/images/week-view.png";
 
 export const EventPage = () => {
   // We will use eventId later on as the primary key for the event database

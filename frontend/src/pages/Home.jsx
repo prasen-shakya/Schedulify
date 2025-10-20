@@ -1,6 +1,13 @@
-import EventModal from "../components/home/EventModal";
+import EventModal from "@/components/home/EventModal";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Home = () => {
+  const { requireAuth } = useAuth();
+
+  const handleScheduleEvent = () => {
+    document.getElementById("event-modal").showModal();
+  };
+
   return (
     <>
       <EventModal />
@@ -15,7 +22,7 @@ export const Home = () => {
         </p>
         <button
           className="btn btn-primary mt-2 h-12"
-          onClick={() => document.getElementById("event-modal").showModal()}
+          onClick={() => requireAuth(handleScheduleEvent)}
         >
           Schedule An Event
         </button>
