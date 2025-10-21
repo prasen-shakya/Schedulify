@@ -145,53 +145,37 @@ app.get("/api/checkAuthenticationStatus", authenticateToken, (req, res) => {
   res.status(200).json({ userId: req.user.userId, message: "Authenticated" });
 });
 
-
-/***************Individual Activity: Algorithm Design in Your Project ***************
- ******************** START THIS ***********************************************************/
-app.get("/api/createEvent", authenticateToken,(req, res) => {})
+app.post("/api/createEvent", authenticateToken,(req, res) => {})
 {
-    //connect to database
-    const connection = await connectViaSSH();
-
-    //test database connection
+    //attempt to connect to database
     try {
-        const connection = await connectViaSSH();
+        const connection = await getDbConnection();
     } catch (err) {
         console.error('Connection error:', err);
+        res.status(500).json({ message: `Server error: ${err.message}` });
     }
 
     //get inputs from the request
     const {name, description, startDate, endDate} = req.body;
-    const OragnizerID = req.user.userId;
+    const oragnizerID = req.user.userId;
 
-    //create the sql injection
-    const sqlCode = 'INSERT INTO Event (OrganizerID, Name, Description, StartDate, EndDate) ' +
-        `VALUE (${OragnizerID}, ${Name}, ${Description}, ${StartDate}, ${EndDate}); `;
 
     //attempt to insert
     try{
-        connection.query(sqlCode);
-        res.send("Created Event Successfully!");
-        res.json({EventId: EventId});
+        //the insert
+        const [rows] = await connection.query( 'INSERT INTO Event (organizerID, name, description, startDate, endDate) ' +
+            `VALUE (${oragnizerID}, ${name}, ${description}, ${startDate}, ${endDate}); `);
+        const eventID = await connection.query('SELECT MAX(EventID) FROM Event;');
+        console.log("Created Event Successfully!");
+        res.status(201).json({eventID: eventID});
     } catch (err) {
         console.error('Failed to insert: ', err);
-        res.send("Failed to insert Event");
-        res.send("Error: " + err);
+        res.status(500).json({ message: `Server error: ${err.message}` });
     }
 
     //close connection
     connection.end();
 }
-
-app.get("/", (req, res) => {
-    res.send("Hello World");
-});
-
-app.listen(port, () => {
-    console.log(`Listening on PORT ${3000}`);
-});
-
-
 app.listen(port, () => {
   console.log(`🚀 Listening on port ${port}`);
 });
