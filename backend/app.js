@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5175",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -72,7 +72,7 @@ app.post("/api/register", async (req, res) => {
 
     // Generate access token
     const accessToken = jwt.sign({ userId: user.UserID }, JWT_SECRET, {
-      expiresIn: "10s",
+      expiresIn: "7d",
     });
 
     res.cookie("token", accessToken, {
@@ -148,4 +148,3 @@ app.get("/api/checkAuthenticationStatus", authenticateToken, (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Listening on port ${port}`);
 });
-
