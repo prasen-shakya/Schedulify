@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
-import weekView from "@/images/week-view.png";
+import WeeklyCalendar from "@/components/event-page/WeeklyCalendar";
 import { useAuth } from "@/contexts/AuthContext";
 
 export const EventPage = () => {
@@ -27,12 +27,16 @@ export const EventPage = () => {
               Add Availability
             </button>
           </div>
-        </div>
+        </div>       
         <div className="mt-12">
           <p>Group Availability</p>
-          <img src={weekView} className="h-[500px]" alt="" />
+          < WeeklyCalendar />
+
+          {/* <img src={weekView} className="h-[500px]" alt="" /> */}
         </div>
       </div>
+
+
     </>
   );
 };
