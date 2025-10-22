@@ -7,7 +7,6 @@ const { getDbConnection } = require("./database");
 
 const app = express();
 const port = 3000;
-const connectViaSSH = require("./db");
 
 const JWT_SECRET = "jwt-secret";
 
