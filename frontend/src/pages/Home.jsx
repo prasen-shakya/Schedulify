@@ -1,5 +1,5 @@
 import EventModal from "@/components/home/EventModal";
-import { useAuth } from "@/contexts/AuthContext";
+import useAuth from "@/hooks/useAuth";
 
 export const Home = () => {
   const { requireAuth } = useAuth();

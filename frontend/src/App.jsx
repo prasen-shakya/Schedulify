@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router";
 import Layout from "./components/Layout";
 import { EventPage } from "./pages/EventPage";
 import { Home } from "./pages/Home";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./providers/AuthProvider";
 
 const App = () => {
   return (
