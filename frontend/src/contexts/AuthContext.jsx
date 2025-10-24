@@ -1,6 +1,6 @@
+import AuthenticationModal from "@/components/authentication/AuthenticationModal";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
-import AuthenticationModal from "../components/authentication/AuthenticationModal";
 
 const AuthContext = createContext(null);
 
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const response = await axios.post("http://localhost:3000/api/login", {
+      await axios.post("http://localhost:3000/api/login", {
         email,
         password,
       });
@@ -84,6 +84,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // This function is an authentication guard for actions that require authentication
   const requireAuth = (onSuccess) => {
     if (!isAuthenticated) {
       showAuthenticationModal();
