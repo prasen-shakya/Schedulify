@@ -164,8 +164,6 @@ app.post("/api/createEvent", authenticateToken, async (req, res) =>
         console.log("Created Event Successfully!");
         res.status(201).json({eventID: eventID});
 
-        //close connection
-        await connection.end();
 
     } catch (err) {
         console.error('Failed to insert: ', err);
