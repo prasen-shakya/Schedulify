@@ -1,11 +1,11 @@
-import { useParams } from "react-router";
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
+import useAuth from "@/hooks/useAuth";
 import weekView from "@/images/week-view.png";
-import { useAuth } from "@/contexts/AuthContext";
+//import { useParams } from "react-router";
 
 export const EventPage = () => {
   // We will use eventId later on as the primary key for the event database
-  const { eventId } = useParams();
+  // const { eventId } = useParams();
   const { requireAuth } = useAuth();
 
   const showAvailabilityModal = () => {

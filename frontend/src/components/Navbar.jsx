@@ -1,5 +1,5 @@
+import useAuth from "@/hooks/useAuth";
 import calendarLogo from "@/images/calendar.png";
-import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
   const { isAuthenticated, showAuthenticationModal, signOut } = useAuth();
