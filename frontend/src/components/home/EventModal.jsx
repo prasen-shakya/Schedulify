@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -30,6 +31,26 @@ const EventModal = () => {
     return hour;
   };
 
+  const toSqlTime = (time) => {
+    const hour24 = to24Hour(time);
+    return `${hour24.toString().padStart(2, "0")}:00:00`;
+  };
+
+  const createEvent = async (eventData) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/createEvent",
+        eventData,
+      );
+      navigate(`/event/${response.data.eventID}`);
+    } catch (error) {
+      console.error(
+        "Error creating event:",
+        error.response?.data || error.message,
+      );
+    }
+  };
+
   useEffect(() => {
     const modal = document.getElementById("event-modal");
 
@@ -50,7 +71,7 @@ const EventModal = () => {
     return () => modal.removeEventListener("close", handleClose);
   }, []);
 
-  const handleEventCreation = (e) => {
+  const handleEventCreation = async (e) => {
     e.preventDefault();
 
     // Reset previous errors
@@ -83,7 +104,14 @@ const EventModal = () => {
     }
 
     // Connect to backend to create event (not implemented yet)
-    navigate("/event/12345");
+    await createEvent({
+      name: eventTitle,
+      description: eventDescription,
+      startDate: startDate,
+      endDate: endDate,
+      startTime: toSqlTime(startTime),
+      endTime: toSqlTime(endTime),
+    });
   };
 
   return (
@@ -252,6 +280,7 @@ const EventModal = () => {
 
           {/* Submit */}
           <div className="border-base-300 flex flex-col gap-3 pt-4">
+            {/* Error Display */}
             <button
               type="submit"
               className="btn btn-primary h-12 w-full rounded-lg font-semibold"

@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { getDbConnection } = require("./database");
+const { uuid } = require("uuidv4");
 
 const app = express();
 const port = 3000;
@@ -144,34 +145,38 @@ app.get("/api/checkAuthenticationStatus", authenticateToken, (req, res) => {
   res.status(200).json({ userId: req.user.userId, message: "Authenticated" });
 });
 
+app.post("/api/createEvent", authenticateToken, async (req, res) => {
+  try {
+    // Get inputs from the request
+    const { name, description, startDate, endDate, startTime, endTime } =
+      req.body;
+    const organizerID = req.user.userId;
+    const eventID = uuid();
 
-app.post("/api/createEvent", authenticateToken, async (req, res) =>
-{
+    // Connect to the database
+    const connection = await getDbConnection();
 
-    try{
-        //get inputs from the request
-        const {name, description, startDate, endDate} = req.body;
-        const organizerID = req.user.userId;
+    // Attempt to insert the new event into the database
+    const [result] = await connection.query(
+      "INSERT INTO Event (EventID, OrganizerID, Name, Description, StartDate, EndDate, StartTime, EndTime) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        eventID,
+        organizerID,
+        name,
+        description,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+      ]
+    );
 
-        //Connect to the database
-        const connection = await getDbConnection();
-
-        //attempt to insert
-        const [result] = await connection.query( 'INSERT INTO Event (organizerID, name, description, startDate, endDate) VALUES (?, ?, ?, ?, ?)', [organizerID, name, description, startDate, endDate] );
-
-        // respond with event ID
-        const eventID = result.insertId;
-        console.log("Created Event Successfully!");
-        res.status(201).json({eventID: eventID});
-
-
-    } catch (err) { //error handling
-        console.error('Failed to insert: ', err);
-        res.status(500).json({ message: `Server error: ${err.message}` });
-    }
-
+    // Respond with event ID
+    res.status(201).json({ eventID: eventID });
+  } catch (err) {
+    res.status(500).json({ message: `Server error: ${err.message}` });
+  }
 });
-
 
 app.listen(port, () => {
   console.log(`🚀 Listening on port ${port}`);
