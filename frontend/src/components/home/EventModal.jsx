@@ -16,8 +16,12 @@ const EventModal = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const titleLimit = 50;
+  const descLimit = 500;
+
   const [errors, setErrors] = useState({
     title: "",
+    description: "",
     date: "",
     time: "",
   });
@@ -57,7 +61,7 @@ const EventModal = () => {
     if (!modal) return;
 
     const handleClose = () => {
-      setErrors({ title: "", date: "", time: "" });
+      setErrors({ title: "", description: "", date: "", time: "" });
       setEventTitle("");
       setEventDescription("");
       setStartDate("");
@@ -73,15 +77,20 @@ const EventModal = () => {
 
   const handleEventCreation = async (e) => {
     e.preventDefault();
-
-    // Reset previous errors
-    setErrors({ title: "", date: "", time: "" });
+    setErrors({ title: "", description: "", date: "", time: "" });
 
     const newErrors = {};
 
     // Validate title
     if (!eventTitle.trim()) {
       newErrors.title = "Event name is required.";
+    } else if (eventTitle.length > titleLimit) {
+      newErrors.title = `Event name must be under ${titleLimit} characters.`;
+    }
+
+    // Validate description
+    if (eventDescription.length > descLimit) {
+      newErrors.description = `Description must be under ${descLimit} characters.`;
     }
 
     // Validate dates
@@ -97,18 +106,18 @@ const EventModal = () => {
       newErrors.time = "End time must be later than start time.";
     }
 
-    // If there are errors, update state and stop
+    // If errors exist, stop submission
     if (Object.keys(newErrors).length > 0) {
       setErrors((prev) => ({ ...prev, ...newErrors }));
       return;
     }
 
-    // Connect to backend to create event (not implemented yet)
+    // Send event to backend
     await createEvent({
       name: eventTitle,
       description: eventDescription,
-      startDate: startDate,
-      endDate: endDate,
+      startDate,
+      endDate,
       startTime: toSqlTime(startTime),
       endTime: toSqlTime(endTime),
     });
@@ -142,6 +151,7 @@ const EventModal = () => {
               Basic Information
             </h3>
             <div className="flex flex-col gap-3">
+              {/* Event Name */}
               <div>
                 <label
                   htmlFor="event-name"
@@ -152,6 +162,7 @@ const EventModal = () => {
                 <input
                   id="event-name"
                   type="text"
+                  maxLength={titleLimit}
                   className={`input input-bordered h-11 w-full ${
                     errors.title ? "border-error" : ""
                   }`}
@@ -159,11 +170,23 @@ const EventModal = () => {
                   value={eventTitle}
                   onChange={(e) => setEventTitle(e.target.value)}
                 />
-                {errors.title && (
-                  <p className="text-error mt-1 text-xs">{errors.title}</p>
-                )}
+                <div className="flex items-center justify-between">
+                  {errors.title && (
+                    <p className="text-error mt-1 text-xs">{errors.title}</p>
+                  )}
+                  <p
+                    className={`mt-1 ml-auto text-xs ${
+                      eventTitle.length > titleLimit * 0.9
+                        ? "text-error"
+                        : "text-base-content/50"
+                    }`}
+                  >
+                    {eventTitle.length}/{titleLimit}
+                  </p>
+                </div>
               </div>
 
+              {/* Description */}
               <div>
                 <label
                   htmlFor="event-description"
@@ -173,11 +196,30 @@ const EventModal = () => {
                 </label>
                 <textarea
                   id="event-description"
-                  className="textarea textarea-bordered h-24 w-full"
+                  className={`textarea textarea-bordered h-24 w-full ${
+                    errors.description ? "border-error" : ""
+                  }`}
                   placeholder="Add optional notes or context..."
                   value={eventDescription}
+                  maxLength={descLimit}
                   onChange={(e) => setEventDescription(e.target.value)}
                 />
+                <div className="flex items-center justify-between">
+                  {errors.description && (
+                    <p className="text-error mt-1 text-xs">
+                      {errors.description}
+                    </p>
+                  )}
+                  <p
+                    className={`mt-1 ml-auto text-xs ${
+                      eventDescription.length > descLimit * 0.9
+                        ? "text-error"
+                        : "text-base-content/50"
+                    }`}
+                  >
+                    {eventDescription.length}/{descLimit}
+                  </p>
+                </div>
               </div>
             </div>
           </section>
@@ -203,7 +245,6 @@ const EventModal = () => {
                     }`}
                     value={startDate}
                     onChange={(e) => {
-                      console.log(new Date().toISOString());
                       setStartDate(e.target.value);
                       if (
                         endDate &&
@@ -280,7 +321,6 @@ const EventModal = () => {
 
           {/* Submit */}
           <div className="border-base-300 flex flex-col gap-3 pt-4">
-            {/* Error Display */}
             <button
               type="submit"
               className="btn btn-primary h-12 w-full rounded-lg font-semibold"

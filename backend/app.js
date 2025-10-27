@@ -178,6 +178,29 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
   }
 });
 
+app.get("/api/getEvent/:eventId", authenticateToken, async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+    const db = await getDbConnection();
+
+    const [rows] = await db.query("SELECT * FROM Event WHERE EventID = ?", [
+      eventId,
+    ]);
+
+    console.log(rows[0]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    res.status(200).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: `Server error: ${err.message}` });
+  }
+});
+
 app.listen(port, () => {
   console.log(`🚀 Listening on port ${port}`);
 });
