@@ -1,7 +1,6 @@
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
 import WeeklyCalendar from "@/components/event-page/WeeklyCalendar";
 import { useAuth } from "@/contexts/AuthContext";
-import weekView from "@/images/week-view.png";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -31,6 +30,8 @@ export const EventPage = () => {
         }
 
         const eventData = await response.json();
+
+        console.log(eventData);
         setEventDetails(eventData);
         setIsLoading(false);
       } catch (error) {
@@ -72,7 +73,7 @@ export const EventPage = () => {
         </div>       
         <div className="mt-12">
           <p>Group Availability</p>
-          < WeeklyCalendar />
+          < WeeklyCalendar earliestStartDate={eventDetails?.StartDate} latestEndDate={eventDetails?.EndDate} />
 
           {/* <img src={weekView} className="h-[500px]" alt="" /> */}
         </div>

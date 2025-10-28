@@ -1,35 +1,56 @@
-import react from "react";
+import { useState, useEffect } from "react";
 
-export default function WeeklyCalendar() {
-  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const timeZone = Array.from({ length: 24 }, (_, i) => i );
+export default function WeeklyCalendar({ earliestStartDate, latestEndDate }) {
+  const [weekdays, setWeekdays] = useState([]);
+  const timeZone = Array.from({ length: 24 }, (_, i) => i);
 
-  const earliestStartDate = new Date(2025, 12, 10);
-  const latestEndDate = new Date(2025, 12, 20);
+  useEffect(() => {
+    if (!earliestStartDate || !latestEndDate) return;
 
+    const start = new Date(earliestStartDate);
+    const end = new Date(latestEndDate);
+    const days = [];
 
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      days.push(new Date(d));
+    }
+
+    setWeekdays(days);
+  }, [earliestStartDate, latestEndDate]);
 
   return (
-    <div className="pb-5 ">
-        <div className="grid grid-cols-[4rem_repeat(7,1fr)] text-xs 
-            w-[700px] cally bg-base-100 scale-100 mt-10">
-            <div></div>
+    <div className="pb-5">        
+      <div
+        className="grid grid-cols-[auto_repeat(5,1fr)] text-xs 
+        w-[750px] cally bg-base-100 scale-100 mt-10"
+      >
+        <div className="w-[38px]"></div>
+      {/* 
+        creating the columns for the calendar 
+        the specific amount of days thats showing in the calendar
+        and the week days with its corresponding date
+      */}  
+        {weekdays.map((day) => (
+            <div
+              key={day.toISOString()}
+              className="font-semibold text-center py-2 border-b border-base-300"
+            >
+              {day.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+            </div>
+        ))}
+      </div>
 
-            {weekdays.map((day) => (
-                <div
-                    key={day}
-                    className="font-semibold text-center py-2 border-b border-base-300"
-                >
-                {day}
-                </div>
-            ))}
-        </div>
-
-
-        {timeZone.map((hour) => (
-        <div key={hour} className="grid grid-cols-[4rem_repeat(7,1fr)]
-                w-[700px] cally bg-base-100 scale-100">
-          <div className="border-r border-base-300 text-right pr-1">
+      {/* 
+        creating the columns for the calendar 
+        including the hours on the left side
+        and the columns on the right side
+      */}  
+      {timeZone.map((hour) => (
+        <div
+          key={hour}
+          className="grid grid-cols-[auto_repeat(5,1fr)] w-[750px] cally text-right"
+        >
+          <div className="border-r border-base-300 pr-1 w-[38px]">
             {new Date(2025, 9, 20, hour).toLocaleTimeString("en-US", {
               hour: "numeric",
               hour12: true,
@@ -38,12 +59,12 @@ export default function WeeklyCalendar() {
 
           {weekdays.map((day) => (
             <div
-              key={`${day}-${hour}`}
+              key={`${day.toISOString()}-${hour}`}
               className="border-r border-b border-base-200 h-8 hover:bg-base-200 cursor-pointer"
             ></div>
           ))}
         </div>
-        ))}
+      ))}
     </div>
   );
 }
