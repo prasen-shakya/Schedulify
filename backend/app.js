@@ -178,6 +178,48 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
   }
 });
 
+app.post("/api/insertAvailability", authenticateToken, async (req, res) => {
+    try {
+        // generate identifier
+        const availabilityID = uuid();
+
+        // Get inputs from the request
+        const { eventID, date, startTime, endTime }
+            = req.body;
+        const userID = req.user.userId;
+
+        // validate inputs
+        // Convert dates and times to Date objects for comparison
+        const start = new Date(`${startDate}T${startTime}`);
+        const end = new Date(`${endDate}T${endTime}`);
+
+        // Check that end time is not before start time
+        if (end < start) {
+            return res.status(400).json({ error: "End time cannot be before start time." });
+        }
+
+        // get connection to database
+        const connection = await getDbConnection();
+
+        const [result] = await connection.query("INSERT INTO Availability (AvailabilityID, UserID, EventID, Date, StartTime, EndTime) VALUES (?, ?, ?, ?, ?, ?)",
+            [
+                availabilityID,
+                userID,
+                eventID,
+                date,
+                startTime,
+                endTime,
+            ]
+        );
+
+        // Respond with availabilityID
+        res.status(201).json({ availabilityID: availabilityID});
+    } catch (err) {
+        res.status(500).json({ message: `Server error: ${err.message}` });
+    }
+
+});
+
 app.get("/api/getEvent/:eventId", authenticateToken, async (req, res) => {
   const { eventId } = req.params;
 
