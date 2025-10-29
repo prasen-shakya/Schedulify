@@ -50,7 +50,7 @@ export const EventPage = () => {
     </div>
   ) : (
     <>
-      <AvailabilityModal />
+      <AvailabilityModal event={eventDetails} />
       <div className="mx-8 my-8 lg:mx-40">
         <div className="flex w-full flex-col justify-between md:flex-row">
           <div className="flex max-w-[70%] flex-col gap-2">
