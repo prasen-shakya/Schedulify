@@ -21,8 +21,8 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate }) {
   return (
     <div className="pb-5">        
       <div
-        className="grid grid-cols-[auto_repeat(5,1fr)] text-xs 
-        w-[750px] cally bg-base-100 scale-100 mt-10"
+        className="grid text-xs w-[750px] cally bg-base-100 scale-100 mt-10"
+        style={{ gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr)`}}
       >
         <div className="w-[38px]"></div>
       {/* 
@@ -48,7 +48,8 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate }) {
       {timeZone.map((hour) => (
         <div
           key={hour}
-          className="grid grid-cols-[auto_repeat(5,1fr)] w-[750px] cally text-right"
+          className="grid w-[750px] cally text-right"
+          style={{ gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr)`}}
         >
           <div className="border-r border-base-300 pr-1 w-[38px]">
             {new Date(2025, 9, 20, hour).toLocaleTimeString("en-US", {
