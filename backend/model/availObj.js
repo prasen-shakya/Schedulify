@@ -1,19 +1,7 @@
 class Availability {
-  constructor(availID, ownerID, event, beginSlot, endSlot) {
-    this.availID = availID;
-    this.ownerID = ownerID;
-    this.event = event;
-    this.beginSlot = beginSlot;
-    this.endSlot = endSlot;
-  }
-
-  modBeginSlot(date) {
-    this.beginSlot = date;
-  }
-
-  modEndSlot(date) {
-    this.endSlot = date;
-  }
+    constructor(date, times) {
+        this.date = date; // this would be a date type
+        this.times = times; // array of times for availability
+    }
 }
-
 export default Availability;
