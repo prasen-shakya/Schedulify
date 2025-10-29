@@ -160,7 +160,7 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
 
     // Check that description is less than 150 characters
     if (description.length > 150) {
-        return res.status(400).json({ error: "Description must be less than 150 characters." });
+        return res.status(400).json({ error: "Description must be less than 150 characters!" });
     }
 
     // Convert dates and times to Date objects for comparison
@@ -169,14 +169,8 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
 
     // Check that end time is not before start time
     if (end < start) {
-        return res.status(400).json({ error: "End time cannot be before start time." });
+        return res.status(400).json({ error: "End time cannot be before start time!" });
     }
-
-    // Check that end date is not before start date
-    if (new Date(endDate) < new Date(startDate)) {
-        return res.status(400).json({ error: "End date cannot be before start date." });
-    }
-
 
     // Connect to the database
     const connection = await getDbConnection();
