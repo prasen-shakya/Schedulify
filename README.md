@@ -102,8 +102,8 @@ npm run dev
 ```
 
 This will use **concurrently** to start both servers:
-- 🔹 **Backend:** Node.js with automatic reload (`node --watch app.js`)
-- 🔹 **Frontend:** Vite development server  
+🔹 **Backend:** Node.js with automatic reload (`node --watch app.js`)
+🔹 **Frontend:** Vite development server  
 
 You can also run them individually:
 ```bash
@@ -120,4 +120,3 @@ npm run frontend
 | `npm run dev` | Run both frontend and backend concurrently |
 | `npm run backend` | Start backend server only |
 | `npm run frontend` | Start frontend dev server only |
-  ```
