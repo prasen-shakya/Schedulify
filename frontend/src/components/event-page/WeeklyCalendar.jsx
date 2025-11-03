@@ -1,25 +1,34 @@
 import { useState, useEffect } from "react";
 
-export default function WeeklyCalendar({ earliestStartDate, latestEndDate }) {
+export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earliestStartTime, latestEndTime }) {
   const [weekdays, setWeekdays] = useState([]);
-  const timeZone = Array.from({ length: 24 }, (_, i) => i);
+  const [timeZone, setTimeZone] = useState([]);
 
   useEffect(() => {
     if (!earliestStartDate || !latestEndDate) return;
 
-    const start = new Date(earliestStartDate);
-    const end = new Date(latestEndDate);
+    const startDate = new Date(earliestStartDate);
+    const endDate = new Date(latestEndDate);
     const days = [];
 
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const startTime = earliestStartTime;
+    const endTime = latestEndTime;
+    const Times = [];
+
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
       days.push(new Date(d));
     }
 
+    for (let d = parseInt(startTime.split(":")[0], 10); d <= parseInt(endTime.split(":")[0], 10); d++) {
+      Times.push(d);
+    }
+
     setWeekdays(days);
-  }, [earliestStartDate, latestEndDate]);
+    setTimeZone(Times);
+  }, [earliestStartDate, latestEndDate, earliestStartTime, latestEndTime]);
 
   return (
-    <div className="pb-5">        
+    <div className="pb-5 h-[950px]">       
       <div
         className="grid text-xs w-[750px] cally bg-base-100 scale-100 mt-10"
         style={{ gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr)`}}
@@ -30,7 +39,7 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate }) {
         the specific amount of days thats showing in the calendar
         and the week days with its corresponding date
       */}  
-        {weekdays.map((day) => (
+        {weekdays.slice(0,5).map((day) => (
             <div
               key={day.toISOString()}
               className="font-semibold text-center py-2 border-b border-base-300"
@@ -48,8 +57,9 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate }) {
       {timeZone.map((hour) => (
         <div
           key={hour}
-          className="grid w-[750px] cally text-right"
-          style={{ gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr)`}}
+          className="grid w-[750px] cally text-right text-top"
+          style={{
+            gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr)`}}
         >
           <div className="border-r border-base-300 pr-1 w-[38px]">
             {new Date(2025, 9, 20, hour).toLocaleTimeString("en-US", {
@@ -58,10 +68,10 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate }) {
             })}
           </div>
 
-          {weekdays.map((day) => (
+          {weekdays.slice(0,5).map((day) => (
             <div
               key={`${day.toISOString()}-${hour}`}
-              className="border-r border-b border-base-200 h-8 hover:bg-base-200 cursor-pointer"
+              className="border-r border-b border-base-200 h-full hover:bg-base-200 cursor-pointer"
             ></div>
           ))}
         </div>

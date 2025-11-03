@@ -73,7 +73,9 @@ export const EventPage = () => {
         </div>       
         <div className="mt-12">
           <p>Group Availability</p>
-          < WeeklyCalendar earliestStartDate={eventDetails?.StartDate} latestEndDate={eventDetails?.EndDate} />
+          < WeeklyCalendar earliestStartDate={eventDetails?.StartDate} latestEndDate={eventDetails?.EndDate}
+                           earliestStartTime={eventDetails?.StartTime} latestEndTime={eventDetails?.EndTime}
+          />
 
           {/* <img src={weekView} className="h-[500px]" alt="" /> */}
         </div>
