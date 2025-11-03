@@ -153,6 +153,25 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
     const organizerID = req.user.userId;
     const eventID = uuid();
 
+    // Check that name is less than 20 characters
+    if (name.length > 20) {
+        return res.status(400).json({ error: "Name must be less than 20 characters." });
+    }
+
+    // Check that description is less than 150 characters
+    if (description.length > 150) {
+        return res.status(400).json({ error: "Description must be less than 150 characters!" });
+    }
+
+    // Convert dates and times to Date objects for comparison
+    const start = new Date(`${startDate}T${startTime}`);
+    const end = new Date(`${endDate}T${endTime}`);
+
+    // Check that end time is not before start time
+    if (end < start) {
+        return res.status(400).json({ error: "End time cannot be before start time!" });
+    }
+
     // Connect to the database
     const connection = await getDbConnection();
 

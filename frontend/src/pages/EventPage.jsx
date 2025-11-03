@@ -30,8 +30,6 @@ export const EventPage = () => {
         }
 
         const eventData = await response.json();
-
-        console.log(eventData);
         setEventDetails(eventData);
         setIsLoading(false);
       } catch (error) {

@@ -16,8 +16,8 @@ const EventModal = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const titleLimit = 50;
-  const descLimit = 500;
+  const titleLimit = 20;
+  const descLimit = 150;
 
   const [errors, setErrors] = useState({
     title: "",
