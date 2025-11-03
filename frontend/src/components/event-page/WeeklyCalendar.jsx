@@ -28,7 +28,7 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
   }, [earliestStartDate, latestEndDate, earliestStartTime, latestEndTime]);
 
   return (
-    <div className="pb-5 h-[950px]">       
+    <div className="pb-5">       
       <div
         className="grid text-xs w-[750px] cally bg-base-100 scale-100 mt-10"
         style={{ gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr)`}}
@@ -71,7 +71,7 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
           {weekdays.slice(0,5).map((day) => (
             <div
               key={`${day.toISOString()}-${hour}`}
-              className="border-r border-b border-base-200 h-full hover:bg-base-200 cursor-pointer"
+              className="border-r border-b border-base-200 h-[30px] hover:bg-base-200 cursor-pointer"
             ></div>
           ))}
         </div>
