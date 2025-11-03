@@ -19,7 +19,7 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
       days.push(new Date(d));
     }
 
-    for (let d = parseInt(startTime.split(":")[0], 10); d <= parseInt(endTime.split(":")[0], 10); d++) {
+    for (let d = parseInt(startTime.split(":")[0], 10); d <= parseInt(endTime.split(":")[0], 10) - 1; d++) {
       Times.push(d);
     }
 
