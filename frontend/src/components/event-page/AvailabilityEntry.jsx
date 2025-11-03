@@ -43,7 +43,7 @@ const AvailabilityEntry = ({
     formatHour(startHour + i),
   );
 
-  // Functions to manage date and time ranges within this availability slot
+  // --- Functions to manage date and time ranges within this availability slot ---
 
   const slot = availabilitySlots.find((s) => s.slotID === slotID);
 
@@ -90,6 +90,7 @@ const AvailabilityEntry = ({
   };
 
   const updateDate = (date) => {
+    console.log("Updating date to:", date);
     setAvailabilitySlots((prev) =>
       prev.map((slot) =>
         slot.slotID === slotID
@@ -138,7 +139,9 @@ const AvailabilityEntry = ({
                       updateTime(time.timeID, "startTime", e.target.value)
                     }
                   >
-                    <option value="">Start</option>
+                    <option value="" key={"start-empty-option"}>
+                      Start
+                    </option>
                     {times.map((t, i) => (
                       <option key={`start-${t}-${i}`} value={toSqlTime(t)}>
                         {t}
@@ -155,7 +158,9 @@ const AvailabilityEntry = ({
                       updateTime(time.timeID, "endTime", e.target.value)
                     }
                   >
-                    <option value="">End</option>
+                    <option value="" key="end-empty-option">
+                      End
+                    </option>
                     {times.map((t, i) => (
                       <option key={`end-${t}-${i}`} value={toSqlTime(t)}>
                         {t}

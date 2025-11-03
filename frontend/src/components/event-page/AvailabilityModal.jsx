@@ -4,6 +4,8 @@ import AvailabilityEntry from "./AvailabilityEntry.jsx";
 
 const AvailabilityModal = ({ event }) => {
   const [availabilitySlots, setAvailabilitySlots] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [apiError, setApiError] = useState("");
 
   // --- Functions to manage availability slots ---
 
@@ -24,7 +26,6 @@ const AvailabilityModal = ({ event }) => {
   };
 
   // --- Validation function ---
-
   const validateAvailability = () => {
     const dateMap = {};
     let isValid = true;
@@ -32,15 +33,14 @@ const AvailabilityModal = ({ event }) => {
     const updatedSlots = availabilitySlots.map((slot) => {
       let error = "";
 
-      const selectedDate = slot.selectedDate; // e.g., "2025-11-02"
-      const startDate = event.StartDate.split("T")[0]; // "2025-11-02"
-      const endDate = event.EndDate.split("T")[0]; // "2025-11-08"
+      const selectedDate = slot.selectedDate;
+      const startDate = event.StartDate.split("T")[0];
+      const endDate = event.EndDate.split("T")[0];
 
       // --- Date validation ---
       if (!slot.selectedDate) {
         error = "Please select a date.";
       } else if (selectedDate > endDate || selectedDate < startDate) {
-        console.log(selectedDate, startDate, endDate);
         error = "Selected date is out of event range.";
       } else if (dateMap[slot.selectedDate]) {
         error = "You have already selected this date.";
@@ -68,16 +68,23 @@ const AvailabilityModal = ({ event }) => {
         }
       }
 
-      // -- Check for overlapping time ranges ---
-      if (!error) {
-        const times = slot.times;
+      // -- Check for at least one time range --
+      if (!error && slot.times.length > 1) {
+        slot.times.forEach((time, index) => {
+          const overlappingTimeSlot = slot.times.some(
+            (otherTime, otherIndex) => {
+              if (index === otherIndex) return false;
+              return (
+                time.startTime < otherTime.endTime &&
+                time.endTime > otherTime.startTime
+              );
+            },
+          );
 
-        times.map((time) => {
-          delete time.timeID;
-          return time;
+          if (overlappingTimeSlot) {
+            error = "Time ranges must not overlap.";
+          }
         });
-
-        console.log(times);
       }
 
       if (error) isValid = false;
@@ -88,8 +95,92 @@ const AvailabilityModal = ({ event }) => {
     return isValid;
   };
 
+  const submitAvailability = () => {
+    if (isUploading) return;
+
+    if (availabilitySlots.length === 0) {
+      setApiError("Please add at least one availability slot.");
+      return;
+    }
+
+    setApiError("");
+
+    if (!validateAvailability()) return;
+
+    // Submit the availability data
+    console.log("Submitting availability:", availabilitySlots);
+    setIsUploading(true);
+
+    setTimeout(() => {
+      setIsUploading(false);
+      document.getElementById("availability-modal").close();
+    }, 3000);
+
+    // axios
+    //   .post("http://localhost:3000/api/updateAvailability", {
+    //     eventID: event.EventID,
+    //     availability: availabilitySlots,
+    //   })
+    //   .then((response) => {
+    //     console.log("Availability submitted successfully:", response.data);
+    //     setIsUploading(false);
+    //     // Close the modal
+    //     document.getElementById("availability-modal").close();
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error submitting availability:", error);
+    //     setApiError(
+    //       "Failed to submit availability. Please try again. Error: " +
+    //         error.message,
+    //     );
+    //     setIsUploading(false);
+    //   });
+    //document.getElementById("availability-modal").close();
+  };
+
   return (
     <dialog id="availability-modal" className="modal">
+      {isUploading && (
+        <div role="alert" className="alert alert-info absolute top-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="h-6 w-6 shrink-0 stroke-current"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <span>Uploading availability...</span>
+        </div>
+      )}
+
+      {apiError && (
+        <div
+          role="alert"
+          className="alert alert-error absolute top-4 text-white"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>{apiError}</span>
+        </div>
+      )}
+
       <div className="modal-box max-w-2xl">
         <div className="p-4 tracking-wide">
           <p className="text-xl">Enter Your Availability</p>
@@ -149,7 +240,7 @@ const AvailabilityModal = ({ event }) => {
               className="btn btn-primary font-semibold"
               onClick={(e) => {
                 e.preventDefault();
-                validateAvailability();
+                submitAvailability();
               }}
             >
               Update
@@ -158,6 +249,7 @@ const AvailabilityModal = ({ event }) => {
               className="btn font-medium"
               onClick={(e) => {
                 e.preventDefault();
+                document.getElementById("availability-modal").close();
               }}
             >
               Close
