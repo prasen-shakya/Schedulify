@@ -232,7 +232,7 @@ app.post("/api/createAvailability", authenticateToken, async (req, res) => {
       // Check that end time is not before start time
       if (endTime < startTime)
       {
-        throw new error(`Availability ${i + 1}: is a duplicate`);
+        throw new Error(`Availability ${i + 1}: End time cannot be before start time!`);
       }
 
       //check for duplicate entries- duplicated being entries with the identical UserID, Date, startTime and endTimes;
