@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earliestStartTime, latestEndTime }) {
   const [weekdays, setWeekdays] = useState([]);
-  const [timeZone, setTimeZone] = useState([]);
+  const [hours, setHours] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
   const visibleDays = 5;
 
@@ -15,7 +15,7 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
 
     const startTime = earliestStartTime;
     const endTime = latestEndTime;
-    const Times = [];
+    const times = [];
 
     for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
       days.push(new Date(d));
@@ -24,11 +24,11 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
     const start = parseInt(startTime.split(":")[0], 10);    
     const end = parseInt(endTime.split(":")[0], 10);
     for (let d = start; d < end; d++) {
-      Times.push(d);
+      times.push(d);
     }
 
     setWeekdays(days);
-    setTimeZone(Times);
+    setHours(times);
   }, [earliestStartDate, latestEndDate, earliestStartTime, latestEndTime]);
 
   const handleNext = () => {
@@ -90,15 +90,15 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
         including the hours on the left side
         and the columns on the right side
       */}  
-      {timeZone.map((hour) => (
+      {hours.map((hour) => (
         <div
           key={hour}
           className="grid w-[750px] cally text-right text-top"
           style={{
-            gridTemplateColumns: `auto repeat(${currentDays.length > 5 ? 5 : currentDays.length}, 1fr)`}}
+          gridTemplateColumns: `auto repeat(${currentDays.length > 5 ? 5 : currentDays.length}, 1fr)`}}
         >
           <div className="border-r border-base-300 pr-1 w-[38px]">
-            {new Date(2025, 9, 20, hour).toLocaleTimeString("en-US", {
+            {new Date(0, 0, 0, hour).toLocaleTimeString("en-US", {
               hour: "numeric",
               hour12: true,
             })}
