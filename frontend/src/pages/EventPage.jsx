@@ -60,7 +60,19 @@ export const EventPage = () => {
             </p>
           </div>
           <div className="flex gap-4">
-            <button className="btn btn-secondary btn-outline">Copy Link</button>
+            <button
+              onClick={(event) => {
+                const eventLink = `${window.location.origin}/event/${eventId}`;
+                navigator.clipboard.writeText(eventLink);
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = "Copied!";
+                setTimeout(() => (btn.textContent = originalText), 1500);
+              }}
+              className="btn btn-secondary btn-outline w-32 text-center"
+            >
+              Copy Link
+            </button>
             <button
               onClick={() => requireAuth(showAvailabilityModal)}
               className="btn btn-primary w-44"
