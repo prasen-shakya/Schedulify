@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { getDbConnection } = require("./database");
 const { uuid } = require("uuidv4");
+const { use } = require("bcrypt/promises");
 
 const app = express();
 const port = 3000;
@@ -231,7 +232,7 @@ app.post("/api/createAvailability", authenticateToken, async (req, res) => {
       // Check that end time is not before start time
       if (endTime < startTime)
       {
-        throw new error(`Availability ${i + 1}: End time is before start time`);
+        throw new error(`Availability ${i + 1}: is a duplicate`);
       }
 
       //check for duplicate entries- duplicated being entries with the identical UserID, Date, startTime and endTimes;
@@ -244,7 +245,7 @@ app.post("/api/createAvailability", authenticateToken, async (req, res) => {
 
       if (duplicates.length > 0) 
       {
-        throw new error(`Availability ${i + 1}: End time is before start time`);
+        throw new Error(`Availability ${i + 1}: is a duplicate`);
       }
       
       //generate ID
@@ -262,13 +263,17 @@ app.post("/api/createAvailability", authenticateToken, async (req, res) => {
         ]
       );
 
-      //create event participants inserts
-      const [resultTwo] = await connection.query("INSERT INTO EventParticipants (UserID, EventID ) VALUES (?, ?)",
-          [
-            userID,
-            eventID,
-          ]
-        );
+      // check for duplicates in EventParticipants
+      const [existing] = await connection.query(
+        "SELECT * FROM EventParticipants WHERE EventID = ? AND UserID = ?",
+        [eventID, userID]
+      );
+      // if no duplicates, insert into EventParticipants
+      if (existing.length === 0) {
+        await connection.query(
+          "INSERT INTO EventParticipants (EventID, UserID) VALUES (?, ?)",
+          [eventID, userID]
+        );}
         
   }
 
@@ -280,7 +285,7 @@ app.post("/api/createAvailability", authenticateToken, async (req, res) => {
   } 
   catch (error) {
     await connection.rollback();
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message});
   }
 });
 
