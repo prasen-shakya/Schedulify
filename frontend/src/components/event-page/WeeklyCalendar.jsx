@@ -15,11 +15,13 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
     const endTime = latestEndTime;
     const Times = [];
 
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    for (let d = startDate; d <= endDate; d.setDate(d.getDate() + 1)) {
       days.push(new Date(d));
     }
 
-    for (let d = parseInt(startTime.split(":")[0], 10); d <= parseInt(endTime.split(":")[0], 10) - 1; d++) {
+    const start = parseInt(startTime.split(":")[0], 10);    
+    const end = parseInt(endTime.split(":")[0], 10);
+    for (let d = start; d < end; d++) {
       Times.push(d);
     }
 
@@ -28,25 +30,34 @@ export default function WeeklyCalendar({ earliestStartDate, latestEndDate, earli
   }, [earliestStartDate, latestEndDate, earliestStartTime, latestEndTime]);
 
   return (
-    <div className="pb-5">       
+    <div className="pb-5 w-[788px]">     
       <div
-        className="grid text-xs w-[750px] cally bg-base-100 scale-100 mt-10"
-        style={{ gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr)`}}
+        className="grid text-xs cally bg-base-100 scale-100 mt-10"
+        style={{ gridTemplateColumns: `auto repeat(${weekdays.length > 5 ? 5 : weekdays.length}, 1fr) auto`}}
       >
-        <div className="w-[38px]"></div>
+      <div className="w-[38px] flex justify-center">
+        <button className="btn btn-ghost btn-sm">
+          <svg aria-label="Previous" className="fill-current size-4" slot="previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="M15.75 19.5 8.25 12l7.5-7.5"></path></svg>
+        </button>
+      </div>
       {/* 
         creating the columns for the calendar 
         the specific amount of days thats showing in the calendar
         and the week days with its corresponding date
       */}  
-        {weekdays.slice(0,5).map((day) => (
-            <div
-              key={day.toISOString()}
-              className="font-semibold text-center py-2 border-b border-base-300"
-            >
-              {day.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-            </div>
-        ))}
+      {weekdays.slice(0,5).map((day) => (
+          <div
+            key={day.toISOString()}
+            className="font-semibold text-center py-2 border-b border-base-300"
+          >
+            {day.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+          </div>
+      ))}
+      <div className="w-[38px] flex justify-center">
+        <button className="btn btn-ghost btn-sm">
+           <svg aria-label="Next" className="fill-current size-4" slot="next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m8.25 4.5 7.5 7.5-7.5 7.5"></path></svg>
+        </button>
+      </div>
       </div>
 
       {/* 
