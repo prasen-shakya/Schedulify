@@ -197,23 +197,28 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
   }
 });
 
-async function insertAvailability(userID, eventID, infoArray)
+async function insertAvailability(userID, eventID, availabilitySlots)
 {
   // get connection to database
   const pool = await getDbConnection(); 
   const connection = await pool.getConnection();
   await connection.beginTransaction();
 
+  if(availabilitySlots.length === 0 )
+  {
+    return "availbilitySlots is empty!";
+  }
+
   try {
 
-    for (let i = 0; i < infoArray.length; i++)
+    for (let i = 0; i < availabilitySlots.length; i++)
     {
-      const {day, start, end} = infoArray[i];
+      const {day, start, end} = availabilitySlots[i];
 
       // validate inputs
       // Convert dates and times to Date objects for comparison
-      const startTime = new Date(`${infoArray[i].day}T${infoArray[i].start}`);
-      const endTime = new Date(`${infoArray[i].day}T${infoArray[i].end}`);
+      const startTime = new Date(`${availabilitySlots[i].day}T${availabilitySlots[i].start}`);
+      const endTime = new Date(`${availabilitySlots[i].day}T${availabilitySlots[i].end}`);
 
 
       // Check that end time is not before start time
@@ -255,56 +260,48 @@ async function insertAvailability(userID, eventID, infoArray)
 
     }
 
-  // apply inserts to database
-  await connection.commit();  
+    // apply inserts to database
+    await connection.commit();  
 
+    const message = "All availabilities successfully inserted.";
 
-  // Respond with success message
-  const returnStats = {
-    message :"All availabilities successfully inserted.",
-    status : 201
-  };
-  connection.release();
-  return returnStats;
+    //direct connection needs release (end), unlike pools
+    connection.release();
+    return message;
   } 
   catch (error) {
     //avoid committing messages
     await connection.rollback();
 
-
-    //response 
-    const returnStats = {
-    message : error.message,
-    status : 400
-    };
-
     //direct connection needs release (end), unlike pools
     connection.release();
-    return returnStats;
-
+    return error.message;
   }
+
 }
 
 
 async function deleteAvailability(eventID, userID)
 {
-  // get connection to database
-  const pool = await getDbConnection(); 
-  const connection = await pool.getConnection();
-  await connection.beginTransaction();
+  try{
+    // get connection to database
+    const pool = await getDbConnection(); 
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
 
-  //only one query to delete all 
-  const [result] =  await connection.query("DELETE FROM Availability WHERE EventID = ? AND UserID = ?",
-    [eventID, userID]);
+    //only one query to delete all 
+    const [result] =  await connection.query("DELETE FROM Availability WHERE EventID = ? AND UserID = ?",
+      [eventID, userID]);
 
+    const message = "All availabilities successfully deleted.";
 
-  const returnStats = {
-    message :"All availabilities successfully deleted.",
-    status : 201
-  };
+    connection.release();
+    return message;
 
-  connection.release();
-  return returnStats;
+  }catch(error)
+  {
+    return error.message;
+  }
 
 }
 
@@ -315,7 +312,7 @@ async function deleteAvailability(eventID, userID)
   
 
   //get all the date with start/end times
-    const infoArray = req.body.availability.flatMap(slot =>
+    const availabilitySlots = req.body.availability.flatMap(slot =>
       slot.times.map(time => ({
         day: slot.selectedDate,
         start: time.startTime,
@@ -347,18 +344,10 @@ async function deleteAvailability(eventID, userID)
     
   
     //insert the new availblity given.
-    const insertResponse = await insertAvailability(userID, eventID, infoArray);
-
-
-    // check if everthing was inserted properly in insertAvailability
-    if(insertResponse.status === 400)
-    {
-      throw new Error( (insertResponse).message );
-    }
-    
+    const insertResponse = await insertAvailability(userID, eventID, availabilitySlots);
 
     //return status
-    res.status(201).json({message :  "Inserts were successful!"});
+    res.status(201).json({message : insertResponse});
 
   }
   catch (error)
