@@ -5,9 +5,9 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
-    globals: true, // (optional, lets you use describe/it/expect without imports)
+    globals: true,
   },
   esbuild: {
-    jsx: "automatic", // ensures the new JSX transform is used
+    jsx: "automatic",
   },
 });
