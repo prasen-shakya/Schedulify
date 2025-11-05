@@ -198,42 +198,31 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
   }
 });
 
-
-app.post("/api/createAvailability", authenticateToken, async (req, res) => {
-  
+async function insertAvailability(userID, eventID, infoArray)
+{
   // get connection to database
   const pool = await getDbConnection(); 
   const connection = await pool.getConnection();
   await connection.beginTransaction();
 
   try {
-    // Get inputs from the request
-    const userID = req.user.userId;
-    const eventID = req.body.eventID;
-
-    //get all the date with start/end times
-    const infoArray = req.body.availability.flatMap(slot =>
-      slot.times.map(time => ({
-        day: slot.selectedDate,
-        start: time.startTime,
-        end: time.endTime
-    })));
 
     for (let i = 0; i < infoArray.length; i++)
     {
       const {day, start, end} = infoArray[i];
 
       // validate inputs
-
       // Convert dates and times to Date objects for comparison
       const startTime = new Date(`${infoArray[i].day}T${infoArray[i].start}`);
       const endTime = new Date(`${infoArray[i].day}T${infoArray[i].end}`);
+
 
       // Check that end time is not before start time
       if (endTime < startTime)
       {
         throw new Error(`Availability ${i + 1}: End time cannot be before start time!`);
       }
+
 
       //check for duplicate entries- duplicated being entries with the identical UserID, Date, startTime and endTimes;
       const [duplicates] = await connection.query(
@@ -243,13 +232,16 @@ app.post("/api/createAvailability", authenticateToken, async (req, res) => {
       [userID, day, start, end]
       );
 
+
       if (duplicates.length > 0) 
       {
         throw new Error(`Availability ${i + 1}: is a duplicate`);
       }
       
+
       //generate ID
       const availabilityID = uuid();
+
 
       //create inserts
       const [result] = await connection.query("INSERT INTO Availability (AvailabilityID, UserID, EventID, Date, StartTime, EndTime) VALUES (?, ?, ?, ?, ?, ?)",
@@ -260,34 +252,95 @@ app.post("/api/createAvailability", authenticateToken, async (req, res) => {
           day,
           start,
           end,
-        ]
-      );
+        ]);
 
-      // check for duplicates in EventParticipants
-      const [existing] = await connection.query(
-        "SELECT * FROM EventParticipants WHERE EventID = ? AND UserID = ?",
-        [eventID, userID]
-      );
-      // if no duplicates, insert into EventParticipants
-      if (existing.length === 0) {
-        await connection.query(
-          "INSERT INTO EventParticipants (EventID, UserID) VALUES (?, ?)",
-          [eventID, userID]
-        );}
-        
-  }
+    }
 
   // apply inserts to database
   await connection.commit();  
 
+
   // Respond with success message
-  res.status(200).json({ message: "All availabilities successfully inserted." });
+  const returnStats = {
+    message :"All availabilities successfully inserted.",
+    status : 201
+  };
+  connection.release();
+  return returnStats;
   } 
   catch (error) {
+    //avoid committing messages
     await connection.rollback();
+
+
+    //response 
+    const returnStats = {
+    message : error.message,
+    status : 400
+    };
+
+    //direct connection needs release (end), unlike pools
+    connection.release();
+    return returnStats;
+
+  }
+}
+
+
+ app.post("/api/updateAvailability", authenticateToken, async (req, res) => {
+  const {eventID, availability} = req.body;
+  const userID = req.user.userId;
+  
+
+  //get all the date with start/end times
+    const infoArray = req.body.availability.flatMap(slot =>
+      slot.times.map(time => ({
+        day: slot.selectedDate,
+        start: time.startTime,
+        end: time.endTime
+    })));
+
+
+    //inserts
+    try {
+      //get database connection
+      const connection = await getDbConnection();
+      const [existing] = await connection.query(
+        "SELECT * FROM EventParticipants WHERE EventID = ? AND UserID = ?",
+        [eventID, userID]
+      );
+ 
+
+    // if no duplicates, insert into EventParticipants (participant is not apart of the event)
+    if (existing.length === 0) 
+    {
+      await connection.query(
+        "INSERT INTO EventParticipants (EventID, UserID) VALUES (?, ?)",
+        [eventID, userID]
+      );
+    }
+    
+  
+    //insert the new availblity given.
+    const insertResponse = await insertAvailability(userID, eventID, infoArray);
+
+
+    // check if everthing was inserted properly in insertAvailability
+    if(insertResponse.status === 400)
+    {
+      throw new Error( (insertResponse).message );
+    }
+    
+
+    //return status
+    res.status(201).json({message :  "Inserts were successful!"});
+
+  }
+  catch (error)
+  {
     res.status(400).json({ error: error.message});
   }
-});
+ });
 
 
 app.get("/api/getEvent/:eventId", authenticateToken, async (req, res) => {
