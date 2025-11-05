@@ -227,22 +227,7 @@ async function insertAvailability(userID, eventID, availabilitySlots)
         throw new Error(`Availability ${i + 1}: End time cannot be before start time!`);
       }
 
-
-      //check for duplicate entries- duplicated being entries with the identical UserID, Date, startTime and endTimes;
-      const [duplicates] = await connection.query(
-      `SELECT * FROM Availability
-      WHERE UserID = ? AND Date = ? 
-      AND StartTime = ? AND EndTime = ?`,
-      [userID, day, start, end]
-      );
-
-
-      if (duplicates.length > 0) 
-      {
-        throw new Error(`Availability ${i + 1}: is a duplicate`);
-      }
       
-
       //generate ID
       const availabilityID = uuid();
 
