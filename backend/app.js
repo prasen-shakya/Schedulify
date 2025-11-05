@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { getDbConnection } = require("./database");
 const { uuid } = require("uuidv4");
-const { use } = require("bcrypt/promises");
 
 const app = express();
 const port = 3000;
@@ -287,29 +286,17 @@ async function insertAvailability(userID, eventID, infoArray)
 }
 
 
-async function deleteAvailability(availabilitiesList, userID)
+async function deleteAvailability(eventID, userID)
 {
   // get connection to database
   const pool = await getDbConnection(); 
   const connection = await pool.getConnection();
   await connection.beginTransaction();
 
-  for (let i = 0; availabilitiesList.length; i++)
-  {
-    //make sure they exist in the database
-    const currentavailability = availabilities[i];
-    const [exists] = connection.query("SELECT * FROM Availability WHERE AvailabilityID = ? AND UserID = ?", 
-      [currentavailability, userID]);
+  //only one query to delete all 
+  const [result] =  await connection.query("DELETE FROM Availability WHERE EventID = ? AND UserID = ?",
+    [eventID, userID]);
 
-
-    //found one that exists SHOULD ONLY BE ONE
-    if(exists.length === 1)
-    {
-      const [result] = connection.query("DELETE FROM Availability WHERE AvailabilityID = ? AND UserID = ?",
-        [currentavailability, userID]);
-    }
-
-  }
 
   const returnStats = {
     message :"All availabilities successfully deleted.",
@@ -353,6 +340,9 @@ async function deleteAvailability(availabilitiesList, userID)
         "INSERT INTO EventParticipants (EventID, UserID) VALUES (?, ?)",
         [eventID, userID]
       );
+    }else
+    {
+      await deleteAvailability(eventID, userID);
     }
     
   
