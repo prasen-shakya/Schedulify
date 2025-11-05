@@ -1,6 +1,6 @@
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
+import WeeklyCalendar from "@/components/event-page/WeeklyCalendar";
 import { useAuth } from "@/contexts/AuthContext";
-import weekView from "@/images/week-view.png";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -68,12 +68,18 @@ export const EventPage = () => {
               Add Availability
             </button>
           </div>
-        </div>
+        </div>       
         <div className="mt-12">
           <p>Group Availability</p>
-          <img src={weekView} className="h-[500px]" alt="" />
+          < WeeklyCalendar earliestStartDate={eventDetails?.StartDate} latestEndDate={eventDetails?.EndDate}
+                           earliestStartTime={eventDetails?.StartTime} latestEndTime={eventDetails?.EndTime}
+          />
+
+          {/* <img src={weekView} className="h-[500px]" alt="" /> */}
         </div>
       </div>
+
+
     </>
   );
 };
