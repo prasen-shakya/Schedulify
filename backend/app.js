@@ -287,6 +287,41 @@ async function insertAvailability(userID, eventID, infoArray)
 }
 
 
+async function deleteAvailability(availabilitiesList, userID)
+{
+  // get connection to database
+  const pool = await getDbConnection(); 
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+
+  for (let i = 0; availabilitiesList.length; i++)
+  {
+    //make sure they exist in the database
+    const currentavailability = availabilities[i];
+    const [exists] = connection.query("SELECT * FROM Availability WHERE AvailabilityID = ? AND UserID = ?", 
+      [currentavailability, userID]);
+
+
+    //found one that exists SHOULD ONLY BE ONE
+    if(exists.length === 1)
+    {
+      const [result] = connection.query("DELETE FROM Availability WHERE AvailabilityID = ? AND UserID = ?",
+        [currentavailability, userID]);
+    }
+
+  }
+
+  const returnStats = {
+    message :"All availabilities successfully deleted.",
+    status : 201
+  };
+
+  connection.release();
+  return returnStats;
+
+}
+
+
  app.post("/api/updateAvailability", authenticateToken, async (req, res) => {
   const {eventID, availability} = req.body;
   const userID = req.user.userId;
