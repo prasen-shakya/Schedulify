@@ -66,8 +66,12 @@ export const EventPage = () => {
                 navigator.clipboard.writeText(eventLink);
                 const btn = event.target;
                 const originalText = btn.textContent;
+                btn.disabled = true;
                 btn.textContent = "Copied!";
-                setTimeout(() => (btn.textContent = originalText), 1500);
+                setTimeout(() => {
+                  btn.textContent = originalText;
+                  btn.disabled = false;
+                }, 1500);
               }}
               className="btn btn-secondary btn-outline w-32 text-center"
             >
@@ -80,18 +84,19 @@ export const EventPage = () => {
               Add Availability
             </button>
           </div>
-        </div>       
+        </div>
         <div className="mt-12">
           <p>Group Availability</p>
-          < WeeklyCalendar earliestStartDate={eventDetails?.StartDate} latestEndDate={eventDetails?.EndDate}
-                           earliestStartTime={eventDetails?.StartTime} latestEndTime={eventDetails?.EndTime}
+          <WeeklyCalendar
+            earliestStartDate={eventDetails?.StartDate}
+            latestEndDate={eventDetails?.EndDate}
+            earliestStartTime={eventDetails?.StartTime}
+            latestEndTime={eventDetails?.EndTime}
           />
 
           {/* <img src={weekView} className="h-[500px]" alt="" /> */}
         </div>
       </div>
-
-
     </>
   );
 };
