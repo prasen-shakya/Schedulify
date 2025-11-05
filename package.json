@@ -1,16 +1,17 @@
 {
-    "name": "schedulify",
-    "version": "1.0.0",
-    "description": "Schedulifyis a web application that simplifies scheduling group events",
-    "scripts": {
-        "frontend": "cd frontend && npm run dev",
-        "backend": "cd backend && node --watch app.js",
-        "dev": "concurrently \"npm run backend\" \"npm run frontend\""
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "concurrently": "^9.2.1"
-    }
+  "name": "schedulify",
+  "version": "1.0.0",
+  "description": "Schedulifyis a web application that simplifies scheduling group events",
+  "scripts": {
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && node --watch app.js",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "test": "cd frontend && npm run test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
 }
