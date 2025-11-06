@@ -6,7 +6,7 @@
     "frontend": "cd frontend && npm run dev",
     "backend": "cd backend && node --watch app.js",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "test": "cd frontend && npm run test"
+    "test": "cd frontend && npm run test",
   },
   "keywords": [],
   "author": "",

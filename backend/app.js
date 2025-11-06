@@ -313,13 +313,13 @@ app.get("/api/getEventParticipants", authenticateToken, async (req, res) => {
     try {
         const connection = await getDbConnection();
 
-        const [rows] = await connection.query("SELECT User.UserID, User.Name FROM User JOIN EventParticipants ON User.UserID = EventParticipants.UserID WHERE EventID = ?", [eventID]);
+        const [eventRows] = await connection.query("SELECT * FROM Event WHERE EventID = ?", [eventID]);
 
-        console.log(rows);
-
-        if (rows.length === 0) {
+        if (eventRows.length === 0) {
             return res.status(404).json({ message: "Event not found." });
         }
+
+        const [rows] = await connection.query("SELECT User.UserID, User.Name FROM User JOIN EventParticipants ON User.UserID = EventParticipants.UserID WHERE EventID = ?", [eventID]);
 
         res.status(200).json(rows);
 
@@ -329,6 +329,9 @@ app.get("/api/getEventParticipants", authenticateToken, async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Listening on port ${port}`);
-});
+if (process.env.NODE_ENV !== "test") {
+    const server = app.listen(port, () => console.log(`🚀 Listening on port ${port}`));
+    module.exports = { app, server };
+} else {
+    module.exports = { app };
+}
