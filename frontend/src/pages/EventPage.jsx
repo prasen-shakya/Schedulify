@@ -6,12 +6,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const EventPage = () => {
-  // We will use eventId later on as the primary key for the event database
-  const { eventId } = useParams();
   const { requireAuth } = useAuth();
-  const [eventDetails, setEventDetails] = useState(null);
   const navigate = useNavigate();
+
+  const { eventId } = useParams();
+  const [eventDetails, setEventDetails] = useState(null);
+  const [availabilityData, setAvailabilityData] = useState(null);
+
   const [isLoading, setIsLoading] = useState(true);
+  const [refreshCalendar, setRefreshCalendar] = useState(false);
 
   useEffect(() => {
     // Fetch event details using eventId when component mounts
@@ -27,28 +30,50 @@ export const EventPage = () => {
         }
 
         setEventDetails(response.data);
+        setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch event details:", error);
         navigate("/404");
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchEventDetails();
   }, [eventId, navigate]);
 
+  useEffect(() => {
+    const fetchAvailabilities = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/getAvailability/${eventId}`,
+        );
+
+        if (response.status === 200) {
+          setAvailabilityData(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch availabilities:", error);
+      }
+    };
+
+    fetchAvailabilities();
+  }, [eventId, refreshCalendar]);
+
   const showAvailabilityModal = () => {
     document.getElementById("availability-modal").showModal();
   };
 
   return isLoading ? (
-    <div className="flex h-full w-full flex-1 items-center justify-center">
-      <span className="loading loading-spinner text-primary w-12"></span>
-    </div>
+    <div></div>
   ) : (
     <>
-      <AvailabilityModal event={eventDetails} />
+      <AvailabilityModal
+        event={eventDetails}
+        onUpdate={() =>
+          setRefreshCalendar((prev) => {
+            return !prev;
+          })
+        }
+      />
       <div className="mx-8 my-8 lg:mx-40">
         <div className="flex w-full flex-col justify-between md:flex-row">
           <div className="flex max-w-[70%] flex-col gap-2">
@@ -90,6 +115,7 @@ export const EventPage = () => {
             latestEndDate={eventDetails?.EndDate}
             earliestStartTime={eventDetails?.StartTime}
             latestEndTime={eventDetails?.EndTime}
+            availabilityData={availabilityData}
           />
 
           {/* <img src={weekView} className="h-[500px]" alt="" /> */}
