@@ -3,7 +3,7 @@ import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import AvailabilityEntry from "./AvailabilityEntry.jsx";
 
-const AvailabilityModal = ({ event }) => {
+const AvailabilityModal = ({ event, onUpdate }) => {
   const [availabilitySlots, setAvailabilitySlots] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [apiError, setApiError] = useState("");
@@ -118,6 +118,7 @@ const AvailabilityModal = ({ event }) => {
       })
       .then((response) => {
         setIsUploading(false);
+        onUpdate();
         // Close the modal
         document.getElementById("availability-modal").close();
       })
@@ -127,7 +128,6 @@ const AvailabilityModal = ({ event }) => {
           "Failed to submit availability. Please try again. Error: " +
             error.message,
         );
-        setIsUploading(false);
       });
   };
 
