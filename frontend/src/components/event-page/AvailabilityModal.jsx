@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
 import AvailabilityEntry from "./AvailabilityEntry.jsx";
@@ -111,31 +112,25 @@ const AvailabilityModal = ({ event }) => {
     console.log("Submitting availability:", availabilitySlots);
     setIsUploading(true);
 
-    setTimeout(() => {
-      setIsUploading(false);
-      document.getElementById("availability-modal").close();
-    }, 3000);
-
-    // axios
-    //   .post("http://localhost:3000/api/updateAvailability", {
-    //     eventID: event.EventID,
-    //     availability: availabilitySlots,
-    //   })
-    //   .then((response) => {
-    //     console.log("Availability submitted successfully:", response.data);
-    //     setIsUploading(false);
-    //     // Close the modal
-    //     document.getElementById("availability-modal").close();
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error submitting availability:", error);
-    //     setApiError(
-    //       "Failed to submit availability. Please try again. Error: " +
-    //         error.message,
-    //     );
-    //     setIsUploading(false);
-    //   });
-    //document.getElementById("availability-modal").close();
+    axios
+      .post("http://localhost:3000/api/updateAvailability", {
+        eventID: event.EventID,
+        availability: availabilitySlots,
+      })
+      .then((response) => {
+        console.log("Availability submitted successfully:", response.data);
+        setIsUploading(false);
+        // Close the modal
+        document.getElementById("availability-modal").close();
+      })
+      .catch((error) => {
+        console.error("Error submitting availability:", error);
+        setApiError(
+          "Failed to submit availability. Please try again. Error: " +
+            error.message,
+        );
+        setIsUploading(false);
+      });
   };
 
   return (
