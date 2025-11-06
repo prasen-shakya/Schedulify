@@ -1,6 +1,7 @@
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
 import WeeklyCalendar from "@/components/event-page/WeeklyCalendar";
 import { useAuth } from "@/contexts/AuthContext";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -16,24 +17,22 @@ export const EventPage = () => {
     // Fetch event details using eventId when component mounts
     const fetchEventDetails = async () => {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `http://localhost:3000/api/getEvent/${eventId}`,
-          {
-            method: "GET",
-            credentials: "include", // include cookies for authentication
-          },
+          { withCredentials: true },
         );
 
-        if (!response.ok) {
+        if (response.status !== 200) {
           navigate("/404");
           return;
         }
 
-        const eventData = await response.json();
-        setEventDetails(eventData);
-        setIsLoading(false);
+        setEventDetails(response.data);
       } catch (error) {
         console.error("Failed to fetch event details:", error);
+        navigate("/404");
+      } finally {
+        setIsLoading(false);
       }
     };
 
