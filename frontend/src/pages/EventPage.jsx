@@ -1,6 +1,6 @@
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
+import WeeklyCalendar from "@/components/event-page/WeeklyCalendar";
 import { useAuth } from "@/contexts/AuthContext";
-import weekView from "@/images/week-view.png";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
@@ -60,7 +60,23 @@ export const EventPage = () => {
             </p>
           </div>
           <div className="flex gap-4">
-            <button className="btn btn-secondary btn-outline">Copy Link</button>
+            <button
+              onClick={(event) => {
+                const eventLink = `${window.location.origin}/event/${eventId}`;
+                navigator.clipboard.writeText(eventLink);
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = "Copied!";
+                setTimeout(() => {
+                  btn.textContent = originalText;
+                  btn.disabled = false;
+                }, 1500);
+              }}
+              className="btn btn-secondary btn-outline w-32 text-center"
+            >
+              Copy Link
+            </button>
             <button
               onClick={() => requireAuth(showAvailabilityModal)}
               className="btn btn-primary w-44"
@@ -71,7 +87,14 @@ export const EventPage = () => {
         </div>
         <div className="mt-12">
           <p>Group Availability</p>
-          <img src={weekView} className="h-[500px]" alt="" />
+          <WeeklyCalendar
+            earliestStartDate={eventDetails?.StartDate}
+            latestEndDate={eventDetails?.EndDate}
+            earliestStartTime={eventDetails?.StartTime}
+            latestEndTime={eventDetails?.EndTime}
+          />
+
+          {/* <img src={weekView} className="h-[500px]" alt="" /> */}
         </div>
       </div>
     </>

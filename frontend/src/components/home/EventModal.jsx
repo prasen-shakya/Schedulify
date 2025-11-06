@@ -3,12 +3,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 const EventModal = () => {
+  const navigate = useNavigate();
+
+  // Generate time options from 12 am to 11 pm
   const times = Array.from({ length: 24 }, (_, h) => {
     const hour = h % 12 === 0 ? 12 : h % 12;
     const suffix = h < 12 ? "am" : "pm";
     return `${hour} ${suffix}`;
   });
 
+  // State variables
   const [eventTitle, setEventTitle] = useState("");
   const [eventDescription, setEventDescription] = useState("");
   const [startTime, setStartTime] = useState("9 am");
@@ -16,9 +20,11 @@ const EventModal = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  // Validation limits
   const titleLimit = 20;
   const descLimit = 150;
 
+  // Error states for each form field
   const [errors, setErrors] = useState({
     title: "",
     description: "",
@@ -26,8 +32,7 @@ const EventModal = () => {
     time: "",
   });
 
-  const navigate = useNavigate();
-
+  // Convert 12-hour time string to 24-hour integer
   const to24Hour = (timeStr) => {
     const [hourStr, suffix] = timeStr.split(" ");
     let hour = parseInt(hourStr, 10) % 12;
@@ -35,11 +40,13 @@ const EventModal = () => {
     return hour;
   };
 
+  // Convert time string to SQL time format (HH:MM:SS)
   const toSqlTime = (time) => {
     const hour24 = to24Hour(time);
     return `${hour24.toString().padStart(2, "0")}:00:00`;
   };
 
+  // Create event API call
   const createEvent = async (eventData) => {
     try {
       const response = await axios.post(
@@ -55,11 +62,13 @@ const EventModal = () => {
     }
   };
 
+  // Reset form on modal close
   useEffect(() => {
     const modal = document.getElementById("event-modal");
 
     if (!modal) return;
 
+    // Reset form fields and errors
     const handleClose = () => {
       setErrors({ title: "", description: "", date: "", time: "" });
       setEventTitle("");
@@ -245,6 +254,7 @@ const EventModal = () => {
                     }`}
                     value={startDate}
                     onChange={(e) => {
+                      // Reset end date if start date exceeds it
                       setStartDate(e.target.value);
                       if (
                         endDate &&
@@ -254,6 +264,7 @@ const EventModal = () => {
                       }
                     }}
                     min={
+                      // Set minimum to today's date
                       new Date(
                         new Date().getTime() -
                           new Date().getTimezoneOffset() * 60000,
