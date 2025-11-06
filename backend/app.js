@@ -197,6 +197,151 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
   }
 });
 
+async function insertAvailability(userID, eventID, availabilitySlots)
+{
+  // get connection to database
+  const pool = await getDbConnection(); 
+  const connection = await pool.getConnection();
+  await connection.beginTransaction();
+
+  if(availabilitySlots.length === 0 )
+  {
+    return "availbilitySlots is empty!";
+  }
+
+  try {
+
+    for (let i = 0; i < availabilitySlots.length; i++)
+    {
+      const {day, start, end} = availabilitySlots[i];
+
+      // validate inputs
+      // Convert dates and times to Date objects for comparison
+      const startTime = new Date(`${availabilitySlots[i].day}T${availabilitySlots[i].start}`);
+      const endTime = new Date(`${availabilitySlots[i].day}T${availabilitySlots[i].end}`);
+
+
+      // Check that end time is not before start time
+      if (endTime < startTime)
+      {
+        throw new Error(`Availability ${i + 1}: End time cannot be before start time!`);
+      }
+
+      
+      //generate ID
+      const availabilityID = uuid();
+
+
+      //create inserts
+      const [result] = await connection.query("INSERT INTO Availability (AvailabilityID, UserID, EventID, Date, StartTime, EndTime) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          availabilityID,
+          userID,
+          eventID,
+          day,
+          start,
+          end,
+        ]);
+
+    }
+
+    // apply inserts to database
+    await connection.commit();  
+
+    const message = "All availabilities successfully inserted.";
+
+    //direct connection needs release (end), unlike pools
+    connection.release();
+    return message;
+  } 
+  catch (error) {
+    //avoid committing messages
+    await connection.rollback();
+
+    //direct connection needs release (end), unlike pools
+    connection.release();
+    return error.message;
+  }
+
+}
+
+
+async function deleteAvailability(eventID, userID)
+{
+  try{
+    // get connection to database
+    const pool = await getDbConnection(); 
+    const connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    //only one query to delete all 
+    const [result] =  await connection.query("DELETE FROM Availability WHERE EventID = ? AND UserID = ?",
+      [eventID, userID]);
+
+    const message = "All availabilities successfully deleted.";
+
+    connection.release();
+    return message;
+
+  }catch(error)
+  {
+    return error.message;
+  }
+
+}
+
+
+ app.post("/api/updateAvailability", authenticateToken, async (req, res) => {
+  const {eventID, availability} = req.body;
+  const userID = req.user.userId;
+  
+
+  //get all the date with start/end times
+    const availabilitySlots = req.body.availability.flatMap(slot =>
+      slot.times.map(time => ({
+        day: slot.selectedDate,
+        start: time.startTime,
+        end: time.endTime
+    })));
+
+
+    //inserts
+    try {
+      //get database connection
+      const connection = await getDbConnection();
+      const [existing] = await connection.query(
+        "SELECT * FROM EventParticipants WHERE EventID = ? AND UserID = ?",
+        [eventID, userID]
+      );
+ 
+
+    // if no duplicates, insert into EventParticipants (participant is not apart of the event)
+    if (existing.length === 0) 
+    {
+      await connection.query(
+        "INSERT INTO EventParticipants (EventID, UserID) VALUES (?, ?)",
+        [eventID, userID]
+      );
+    }else
+    {
+      await deleteAvailability(eventID, userID);
+    }
+    
+  
+    //insert the new availblity given.
+    const insertResponse = await insertAvailability(userID, eventID, availabilitySlots);
+
+    //return status
+    res.status(201).json({message : insertResponse});
+
+  }
+  catch (error)
+  {
+    res.status(400).json({ error: error.message});
+  }
+ });
+
+
 app.get("/api/getEvent/:eventId", authenticateToken, async (req, res) => {
   const { eventId } = req.params;
 
