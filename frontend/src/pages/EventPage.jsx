@@ -19,7 +19,6 @@ export const EventPage = () => {
       try {
         const response = await axios.get(
           `http://localhost:3000/api/getEvent/${eventId}`,
-          { withCredentials: true },
         );
 
         if (response.status !== 200) {
