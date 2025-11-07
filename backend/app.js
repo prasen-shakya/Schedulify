@@ -300,7 +300,7 @@ app.get("/api/getAvailability/:eventId", async (req, res) => {
     const [availabilities] = await connection.query(query, [eventId]);
     
     // format the availabilities by users for frontend
-    const [availabilitiesByUsers] = orderAvailabilitiesByUser(availabilities);
+    const availabilitiesByUsers = orderAvailabilitiesByUser(availabilities);
 
     // respond with request sucessful and the availabilities ordered by users
     res.status(200).send(availabilitiesByUsers);
