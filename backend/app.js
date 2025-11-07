@@ -285,6 +285,77 @@ app.post("/api/updateAvailability", authenticateToken, async (req, res) => {
   }
 });
 
+
+app.get("/api/getAvailability/:eventId", async (req, res) => {
+  const {eventId} = req.params;
+
+  try{
+    //get db connection
+    const connection = await getDbConnection();
+
+    //query is in a variable for readability 
+    const query = 'SELECT U.Name AS UserName, A.Date AS AvailabilityDate, A.StartTime, A.EndTime FROM User U JOIN Availability A ON U.UserID = A.UserID WHERE A.EventID = ? ORDER BY A.Date, A.StartTime;';
+
+    //get results from db
+    const [availabilities] = await connection.query(query, [eventId]);
+    
+    //format the availabilities by users for frontend
+    const [availabilitiesByUsers] = orderAvailabilitiesByUser(availabilities);
+
+    //response
+    res.status(200).json({information : availabilitiesByUsers});
+
+  }catch(error)
+  {
+    //respond with error and message
+    console.error(error);
+    res.status(500).json({ message: `Server error: ${error.message}` });
+  }
+
+});
+
+
+function orderAvailabilitiesByUser(availabilities)
+{
+    const grouped = {};
+
+    // go through each row in availabilities
+    availabilities.forEach((row) => {
+    const user = row.UserName;
+    const date = new Date(row.AvailabilityDate).toISOString().split("T")[0];
+
+    // if user doesn't exist yet, add them
+    if (!grouped[user]) {
+      grouped[user] = {};
+    }
+
+    // if date doesn't exist under that user yet, add it
+    if (!grouped[user][date]) {
+      grouped[user][date] = [];
+    }
+
+    // push time ranges
+    grouped[user][date].push({
+      startTime: row.StartTime,
+      endTime: row.EndTime,
+    });
+  });
+
+  // convert the grouped object into format frontend wants
+  const result = Object.entries(grouped).map(([user, dates]) => ({
+    user,
+    availability: Object.entries(dates).map(([date, times]) => ({
+      date,
+      times,
+    })),
+  }));
+
+  return result;
+
+};
+
+
+
 app.get("/api/getEvent/:eventId", async (req, res) => {
   const { eventId } = req.params;
 
