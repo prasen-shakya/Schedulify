@@ -57,7 +57,6 @@ export default function WeeklyCalendar({
 
   return (
     <div className="overflow-auto px-1">
-      {console.log("Rendering WeeklyCalendar")}
       <div className="w-[788px]">
         <div
           className="bg-base-100 mt-10 grid scale-100 text-[0.7rem]"

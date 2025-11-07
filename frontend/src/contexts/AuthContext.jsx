@@ -19,11 +19,9 @@ export const AuthProvider = ({ children }) => {
         );
         if (res.status === 200) {
           setIsAuthenticated(true);
-          console.log(`User ${res.data.userId} is authenticated`);
         }
       } catch {
         setIsAuthenticated(false);
-        console.log("User is not authenticated");
       }
     };
 
@@ -72,7 +70,6 @@ export const AuthProvider = ({ children }) => {
         email,
         password,
       });
-      console.log("Registration successful:", response.data);
       setIsAuthenticated(true);
       return "success";
     } catch (error) {

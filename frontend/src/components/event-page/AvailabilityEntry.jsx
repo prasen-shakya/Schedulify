@@ -90,7 +90,6 @@ const AvailabilityEntry = ({
   };
 
   const updateDate = (date) => {
-    console.log("Updating date to:", date);
     setAvailabilitySlots((prev) =>
       prev.map((slot) =>
         slot.slotID === slotID

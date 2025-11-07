@@ -109,7 +109,6 @@ const AvailabilityModal = ({ event }) => {
     if (!validateAvailability()) return;
 
     // Submit the availability data
-    console.log("Submitting availability:", availabilitySlots);
     setIsUploading(true);
 
     axios
@@ -118,7 +117,6 @@ const AvailabilityModal = ({ event }) => {
         availability: availabilitySlots,
       })
       .then((response) => {
-        console.log("Availability submitted successfully:", response.data);
         setIsUploading(false);
         // Close the modal
         document.getElementById("availability-modal").close();
