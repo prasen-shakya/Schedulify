@@ -290,20 +290,20 @@ app.get("/api/getAvailability/:eventId", async (req, res) => {
   const {eventId} = req.params;
 
   try{
-    //get db connection
+    // get db connection
     const connection = await getDbConnection();
 
-    //query is in a variable for readability 
+    // query is in a variable for readability 
     const query = 'SELECT U.Name AS UserName, A.Date AS AvailabilityDate, A.StartTime, A.EndTime FROM User U JOIN Availability A ON U.UserID = A.UserID WHERE A.EventID = ? ORDER BY A.Date, A.StartTime;';
 
-    //get results from db
+    // get results from db
     const [availabilities] = await connection.query(query, [eventId]);
     
-    //format the availabilities by users for frontend
+    // format the availabilities by users for frontend
     const [availabilitiesByUsers] = orderAvailabilitiesByUser(availabilities);
 
-    //response
-    res.status(200).json({information : availabilitiesByUsers});
+    // respond with request sucessful and the availabilities ordered by users
+    res.status(200).send(availabilitiesByUsers);
 
   }catch(error)
   {
