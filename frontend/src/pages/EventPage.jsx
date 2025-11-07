@@ -68,11 +68,7 @@ export const EventPage = () => {
     <>
       <AvailabilityModal
         event={eventDetails}
-        onUpdate={() =>
-          setRefreshCalendar((prev) => {
-            return !prev;
-          })
-        }
+        onUpdate={() => setRefreshCalendar((prev) => !prev)}
       />
       <div className="mx-8 my-8 lg:mx-40">
         <div className="flex w-full flex-col justify-between md:flex-row">
