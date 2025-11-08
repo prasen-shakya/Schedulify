@@ -100,11 +100,6 @@ const AvailabilityModal = ({ event, onUpdate }) => {
   const submitAvailability = () => {
     if (isUploading) return;
 
-    if (availabilitySlots.length === 0) {
-      setApiError("Please add at least one availability slot.");
-      return;
-    }
-
     setApiError("");
 
     if (!validateAvailability()) return;

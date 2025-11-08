@@ -185,7 +185,7 @@ async function insertAvailability(userID, eventID, availabilitySlots) {
   await connection.beginTransaction();
 
   if (availabilitySlots.length === 0) {
-    return "availbilitySlots is empty!";
+    return "availbilitySlots is empty, inserted nothing.";
   }
 
   try {
@@ -254,7 +254,7 @@ app.post("/api/updateAvailability", authenticateToken, async (req, res) => {
   const userID = req.user.userId;
 
   //get all the date with start/end times
-  const availabilitySlots = req.body.availability.flatMap((slot) =>
+  const availabilitySlots = availability.flatMap((slot) =>
     slot.times.map((time) => ({
       day: slot.selectedDate,
       start: time.startTime,
