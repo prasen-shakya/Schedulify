@@ -1,25 +1,26 @@
-# 📅 Schedulify  
+# 📅 Schedulify
 
-## 🚀 Overview  
+## 🚀 Overview
+
 **Schedulify** is a web application that simplifies scheduling group events.  
-No more endless back-and-forth messages — with Schedulify you can:  
+No more endless back-and-forth messages — with Schedulify you can:
 
-- ✅ Create events with details like name, description, and time frame  
-- 🤝 Share the event with participants via a unique link  
-- 📆 Collect availability from everyone in one place  
-- ⏱️ Automatically find the best overlapping time to meet  
+- ✅ Create events with details like name, description, and time frame
+- 🤝 Share the event with participants via a unique link
+- 📆 Collect availability from everyone in one place
+- ⏱️ Automatically find the best overlapping time to meet
 
 ---
 
 ## ⚙️ Tech Stack
 
-- **Frontend:** React + Vite  
-- **Backend:** Node.js + Express  
-- **Database:** MySQL  
+- **Frontend:** React + Vite
+- **Backend:** Node.js + Express
+- **Database:** MySQL
 
 ---
 
-## 🧩 Project Structure  
+## 🧩 Project Structure
 
 ```
 schedulify/
@@ -38,17 +39,20 @@ schedulify/
 
 ---
 
-## 💻 Getting Started  
+## 💻 Getting Started
 
-### 1️⃣ Prerequisites  
-Before running this project, make sure you have installed:  
-- [Node.js](https://nodejs.org/) (v18 or later)  
-- [npm](https://www.npmjs.com/)  
+### 1️⃣ Prerequisites
+
+Before running this project, make sure you have installed:
+
+- [Node.js](https://nodejs.org/) (v18 or later)
+- [npm](https://www.npmjs.com/)
 - [MySQL](https://www.mysql.com/)
 
 ---
 
-### 2️⃣ Clone the Repository  
+### 2️⃣ Clone the Repository
+
 ```bash
 git clone https://github.com/prasen-shakya/Schedulify
 cd schedulify
@@ -56,20 +60,23 @@ cd schedulify
 
 ---
 
-### 3️⃣ Install Dependencies  
+### 3️⃣ Install Dependencies
 
-**Install root dependencies** (for concurrently):  
+**Install root dependencies** (for concurrently):
+
 ```bash
 npm install
 ```
 
-**Install backend dependencies:**  
+**Install backend dependencies:**
+
 ```bash
 cd backend
 npm install
 ```
 
-**Install frontend dependencies:**  
+**Install frontend dependencies:**
+
 ```bash
 cd ../frontend
 npm install
@@ -77,46 +84,50 @@ npm install
 
 ---
 
-### 4️⃣ Configure Environment Variables  
+### 4️⃣ Configure Environment Variables
 
-Create a `.env` file inside the **backend** folder with the following content:  
+Create a `.env` file inside the **backend** folder with the following content:
+
 ```
-SSH_HOST=
-SSH_PORT=
-SSH_USER=
-SSH_PASSWORD=
-DB_HOST=
-DB_PORT=
-DB_USER=
-DB_PASSWORD=
-DB_NAME=
+DB_HOST=127.0.0.1
+DB_PORT=3307
+DB_USER= your username
+DB_PASSWORD= your password
+DB_NAME= your database name
+
+PORT=3000
 ```
 
 ---
 
-### 5️⃣ Run the Application  
+### 5️⃣ Set Up SSH Tunnel to Remote Database
 
-From the project root directory:  
+Run this command from your local machine:
+
+```bash
+ssh -L 3307:127.0.0.1:3306 YOUR_USERNAME@blue.cs.sonoma.edu
+```
+
+Keep this terminal open while working, or run it in the background.
+
+### 6️⃣ Run the Application
+
+From the project root directory:
+
 ```bash
 npm run dev
 ```
 
 This will use **concurrently** to start both servers:
+
 - **Backend:** Node.js with automatic reload (`node --watch app.js`)
-- **Frontend:** Vite development server  
+- **Frontend:** Vite development server
 
 You can also run them individually:
+
 ```bash
 npm run backend
 npm run frontend
 ```
 
 ---
-
-## 🧠 Available Scripts  
-
-| Command | Description |
-|----------|--------------|
-| `npm run dev` | Run both frontend and backend concurrently |
-| `npm run backend` | Start backend server only |
-| `npm run frontend` | Start frontend dev server only |
