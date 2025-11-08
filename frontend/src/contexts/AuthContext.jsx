@@ -1,4 +1,5 @@
 import AuthenticationModal from "@/components/authentication/AuthenticationModal";
+import { API_URL } from "@/utilities/constants.js";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -14,12 +15,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:3000/api/checkAuthenticationStatus",
-        );
-        if (res.status === 200) {
-          setIsAuthenticated(true);
-        }
+        await axios.get(`${API_URL}/api/checkAuthenticationStatus`);
+        setIsAuthenticated(true);
       } catch {
         setIsAuthenticated(false);
       }
@@ -34,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      await axios.post("http://localhost:3000/api/login", {
+      await axios.post(`${API_URL}/api/login`, {
         email,
         password,
       });
@@ -53,7 +50,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
-      await axios.post("http://localhost:3000/api/logout");
+      await axios.post(`${API_URL}/api/logout`);
       setIsAuthenticated(false);
     } catch (error) {
       console.error(
@@ -65,7 +62,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const response = await axios.post("http://localhost:3000/api/register", {
+      await axios.post(`${API_URL}/api/register`, {
         name,
         email,
         password,

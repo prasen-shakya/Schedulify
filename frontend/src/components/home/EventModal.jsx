@@ -1,3 +1,4 @@
+import { API_URL } from "@/utilities/constants.js";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -50,7 +51,7 @@ const EventModal = () => {
   const createEvent = async (eventData) => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/createEvent",
+        `${API_URL}/api/createEvent`,
         eventData,
       );
       navigate(`/event/${response.data.eventID}`);
