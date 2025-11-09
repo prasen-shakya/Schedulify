@@ -1,4 +1,5 @@
 import AvailabilityModal from "@/components/event-page/AvailabilityModal";
+import Participants from "@/components/event-page/Participants";
 import WeeklyCalendar from "@/components/event-page/WeeklyCalendar";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_URL } from "@/utilities/constants.js";
@@ -12,6 +13,7 @@ export const EventPage = () => {
 
   const { eventId } = useParams();
   const [eventDetails, setEventDetails] = useState(null);
+  const [participants, setParticipants] = useState(null);
   const [availabilityData, setAvailabilityData] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +49,21 @@ export const EventPage = () => {
       }
     };
 
+    const fetchParticipants = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/api/getEventParticipants/${eventId}`,
+        );
+
+        console.log("Participants response:", response.data);
+        setParticipants(response.data);
+      } catch (error) {
+        console.error("Failed to fetch participants:", error);
+      }
+    };
+
     fetchAvailabilities();
+    fetchParticipants();
   }, [eventId, refreshCalendar]);
 
   const showAvailabilityModal = () => {
@@ -65,8 +81,8 @@ export const EventPage = () => {
       <div className="mx-8 my-8 lg:mx-40">
         <div className="flex w-full flex-col justify-between md:flex-row">
           <div className="flex max-w-[70%] flex-col gap-2">
-            <h1 className="text-2xl">{eventDetails?.Name}</h1>
-            <p className="font-light text-gray-500">
+            <h1 className="text-xl">{eventDetails?.Name}</h1>
+            <p className="text-sm font-light text-gray-500">
               {eventDetails?.Description}
             </p>
           </div>
@@ -96,14 +112,16 @@ export const EventPage = () => {
             </button>
           </div>
         </div>
-        <div className="mt-12">
+        <div className="mt-12 flex flex-col gap-8 lg:flex-row">
           <WeeklyCalendar
             earliestStartDate={eventDetails?.StartDate}
             latestEndDate={eventDetails?.EndDate}
             earliestStartTime={eventDetails?.StartTime}
             latestEndTime={eventDetails?.EndTime}
             availabilityData={availabilityData}
+            participants={participants}
           />
+          <Participants participants={participants} />
         </div>
       </div>
     </>

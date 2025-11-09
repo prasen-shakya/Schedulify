@@ -6,6 +6,7 @@ export default function WeeklyCalendar({
   earliestStartTime,
   latestEndTime,
   availabilityData,
+  participants,
 }) {
   const [startIndex, setStartIndex] = useState(0);
 
@@ -85,7 +86,7 @@ export default function WeeklyCalendar({
   const currentDays = weekdays.slice(startIndex, startIndex + visibleDays);
 
   return (
-    <div className="mt-10 max-w-full overflow-auto px-1 xl:max-w-3/4">
+    <div className="max-w-full flex-1 overflow-auto px-1 xl:max-w-3/4">
       <div className="flex max-w-full min-w-fit items-start gap-0">
         <div className="flex-1">
           <div
@@ -162,7 +163,7 @@ export default function WeeklyCalendar({
                       style={
                         isAvailable
                           ? {
-                              backgroundColor: `rgba(0, 130, 207, ${Math.max(0.15, availablePeople.length / 3.0)})`,
+                              backgroundColor: `rgba(0, 130, 207, ${Math.max(0.15, availablePeople.length / (participants?.length || 1))})`,
                             }
                           : {}
                       }
