@@ -367,6 +367,30 @@ app.get("/api/getEvent/:eventId", async (req, res) => {
   }
 });
 
+app.get("/api/getEventParticipants/:eventId", async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+    const connection = await getDbConnection();
+
+    const [eventRows] = await connection.query("SELECT * FROM Event WHERE EventID = ?", [eventId]);
+
+    if (eventRows.length === 0) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    const [rows] = await connection.query(
+      "SELECT User.UserID, User.Name FROM User JOIN EventParticipants ON User.UserID = EventParticipants.UserID WHERE EventID = ?",
+      [eventId]
+    );
+
+    res.status(200).json(rows);
+  } catch (err) {
+    console.error("Error getting event participants.", err);
+    res.status(400).json({ message: `Server error: ${err.message}` });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
