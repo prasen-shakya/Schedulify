@@ -5,8 +5,10 @@
   "scripts": {
     "frontend": "cd frontend && npm run dev",
     "backend": "cd backend && node --watch app.js",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "test": "cd frontend && npm run test"
+    "install:all": "npm install && npm run install:backend && npm run install:frontend"
   },
   "keywords": [],
   "author": "",

@@ -39,7 +39,7 @@ schedulify/
 
 ---
 
-## 💻 Getting Started
+## 💻 Local Development
 
 ### 1️⃣ Prerequisites
 
@@ -62,24 +62,12 @@ cd schedulify
 
 ### 3️⃣ Install Dependencies
 
-**Install root dependencies** (for concurrently):
+**Install all dependencies**:
+
+From the project root directory:
 
 ```bash
-npm install
-```
-
-**Install backend dependencies:**
-
-```bash
-cd backend
-npm install
-```
-
-**Install frontend dependencies:**
-
-```bash
-cd ../frontend
-npm install
+npm run install:all
 ```
 
 ---
@@ -88,14 +76,15 @@ npm install
 
 Create a `.env` file inside the **backend** folder with the following content:
 
-```
+```bash
 DB_HOST=127.0.0.1
 DB_PORT=3307
-DB_USER= your username
-DB_PASSWORD= your password
-DB_NAME= your database name
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=your_database_name
 
 PORT=3000
+JWT_TOKEN=your_token
 ```
 
 ---
