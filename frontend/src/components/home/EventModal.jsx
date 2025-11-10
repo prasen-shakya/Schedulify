@@ -1,4 +1,5 @@
 import { API_URL } from "@/utilities/constants.js";
+import { to24Hour, toSqlTime } from "@/utilities/timeUtils.js";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -32,20 +33,6 @@ const EventModal = () => {
     date: "",
     time: "",
   });
-
-  // Convert 12-hour time string to 24-hour integer
-  const to24Hour = (timeStr) => {
-    const [hourStr, suffix] = timeStr.split(" ");
-    let hour = parseInt(hourStr, 10) % 12;
-    if (suffix === "pm") hour += 12;
-    return hour;
-  };
-
-  // Convert time string to SQL time format (HH:MM:SS)
-  const toSqlTime = (time) => {
-    const hour24 = to24Hour(time);
-    return `${hour24.toString().padStart(2, "0")}:00:00`;
-  };
 
   // Create event API call
   const createEvent = async (eventData) => {

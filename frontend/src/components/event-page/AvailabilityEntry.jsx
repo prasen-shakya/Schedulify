@@ -1,3 +1,4 @@
+import { formatHour, parseHour, toSqlTime } from "@/utilities/timeUtils.js";
 import { v4 as uuid } from "uuid";
 
 // Start time and End time are in "HH:MM:SS" format
@@ -14,27 +15,6 @@ const AvailabilityEntry = ({
     StartDate: startDate,
     EndDate: endDate,
   } = event;
-
-  // Functions to generate the time options based on the start and end times
-
-  const parseHour = (timeStr) => parseInt(timeStr.split(":")[0], 10);
-
-  // Function to convert 13 to "1 pm"
-  const formatHour = (h) => {
-    const hour = h % 12 === 0 ? 12 : h % 12;
-    const suffix = h < 12 ? "am" : "pm";
-    return `${hour} ${suffix}`;
-  };
-
-  // Function to convert "1 am" to "01:00:00"
-  const toSqlTime = (time) => {
-    const [hourStr, suffix] = time.split(" ");
-
-    let hour = parseInt(hourStr, 10) % 12;
-    if (suffix === "pm") hour += 12;
-
-    return `${hour.toString().padStart(2, "0")}:00:00`;
-  };
 
   const startHour = parseHour(startTime);
   const endHour = parseHour(endTime);
