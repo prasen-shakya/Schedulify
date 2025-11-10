@@ -87,6 +87,12 @@ PORT=3000
 JWT_TOKEN=your_token
 ```
 
+Create a `.env` file inside the **frontend** folder with the following content:
+
+```bash
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
 ---
 
 ### 5️⃣ Set Up SSH Tunnel to Remote Database
