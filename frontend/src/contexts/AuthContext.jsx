@@ -1,5 +1,4 @@
 import AuthenticationModal from "@/components/authentication/AuthenticationModal";
-import { API_URL } from "@/utilities/constants.js";
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -8,14 +7,11 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // Always send cookies with axios requests
-  axios.defaults.withCredentials = true;
-
   // Check authentication on mount because JWT might expire
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get(`${API_URL}/api/checkAuthenticationStatus`);
+        await axios.get(`/checkAuthenticationStatus`);
         setIsAuthenticated(true);
       } catch {
         setIsAuthenticated(false);
@@ -31,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      await axios.post(`${API_URL}/api/login`, {
+      await axios.post(`/login`, {
         email,
         password,
       });
@@ -50,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
-      await axios.post(`${API_URL}/api/logout`);
+      await axios.post(`/logout`);
       setIsAuthenticated(false);
     } catch (error) {
       console.error(
@@ -62,7 +58,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      await axios.post(`${API_URL}/api/register`, {
+      await axios.post(`/register`, {
         name,
         email,
         password,

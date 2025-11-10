@@ -1,4 +1,3 @@
-import { API_URL } from "@/utilities/constants.js";
 import { to24Hour, toSqlTime } from "@/utilities/timeUtils.js";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -37,10 +36,7 @@ const EventModal = () => {
   // Create event API call
   const createEvent = async (eventData) => {
     try {
-      const response = await axios.post(
-        `${API_URL}/api/createEvent`,
-        eventData,
-      );
+      const response = await axios.post(`/createEvent`, eventData);
       navigate(`/event/${response.data.eventID}`);
     } catch (error) {
       console.error(

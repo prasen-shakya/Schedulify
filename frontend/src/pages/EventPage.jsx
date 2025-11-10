@@ -2,7 +2,6 @@ import AvailabilityModal from "@/components/event-page/AvailabilityModal";
 import Participants from "@/components/event-page/Participants";
 import WeeklyCalendar from "@/components/event-page/WeeklyCalendar";
 import { useAuth } from "@/contexts/AuthContext";
-import { API_URL } from "@/utilities/constants.js";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -23,7 +22,7 @@ export const EventPage = () => {
     // Fetch event details using eventId when component mounts
     const fetchEventDetails = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/getEvent/${eventId}`);
+        const response = await axios.get(`/getEvent/${eventId}`);
 
         setEventDetails(response.data);
         setIsLoading(false);
@@ -39,9 +38,7 @@ export const EventPage = () => {
   useEffect(() => {
     const fetchAvailabilities = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/api/getAvailability/${eventId}`,
-        );
+        const response = await axios.get(`/getAvailability/${eventId}`);
 
         setAvailabilityData(response.data);
       } catch (error) {
@@ -51,9 +48,7 @@ export const EventPage = () => {
 
     const fetchParticipants = async () => {
       try {
-        const response = await axios.get(
-          `${API_URL}/api/getEventParticipants/${eventId}`,
-        );
+        const response = await axios.get(`/getEventParticipants/${eventId}`);
 
         console.log("Participants response:", response.data);
         setParticipants(response.data);

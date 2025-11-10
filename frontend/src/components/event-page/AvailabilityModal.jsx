@@ -1,4 +1,3 @@
-import { API_URL } from "@/utilities/constants.js";
 import axios from "axios";
 import { useState } from "react";
 import { v4 as uuid } from "uuid";
@@ -108,7 +107,7 @@ const AvailabilityModal = ({ event, onUpdate }) => {
     setIsUploading(true);
 
     axios
-      .post(`${API_URL}/api/updateAvailability`, {
+      .post(`/updateAvailability`, {
         eventID: event.EventID,
         availability: availabilitySlots,
       })

@@ -1,10 +1,15 @@
+import axios from "axios";
 import { BrowserRouter, Route, Routes } from "react-router";
 import Layout from "./components/Layout";
+import { AuthProvider } from "./contexts/AuthContext";
 import { EventPage } from "./pages/EventPage";
 import { Home } from "./pages/Home";
-import { AuthProvider } from "./contexts/AuthContext";
 
 const App = () => {
+  // Always send cookies with axios requests
+  axios.defaults.withCredentials = true;
+  axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+
   return (
     <AuthProvider>
       <BrowserRouter>
