@@ -49,6 +49,8 @@ Before running this project, make sure you have installed:
 - [npm](https://www.npmjs.com/)
 - [MySQL](https://www.mysql.com/)
 
+Before running the app, create a database using the schema file located in the db directory.
+
 ---
 
 ### 2️⃣ Clone the Repository
