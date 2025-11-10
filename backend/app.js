@@ -5,28 +5,39 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { getDbConnection, closePool } = require("./database");
 const { uuid } = require("uuidv4");
+const path = require("path");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-const JWT_SECRET = "jwt-secret";
+const buildPath = path.join(path.dirname(__dirname), "frontend/dist");
+
+const jwtSecret = process.env.JWT_SECRET;
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static(buildPath));
+
+  app.get(/(.*)/, (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
+} else {
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: true,
+    })
+  );
+}
 
 function authenticateToken(req, res, next) {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ message: "Not authenticated" });
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, jwtSecret);
     req.user = decoded;
     next();
   } catch {
@@ -38,10 +49,6 @@ function authenticateToken(req, res, next) {
     res.status(403).json({ message: "Invalid or expired token" });
   }
 }
-
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
 
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
@@ -64,7 +71,7 @@ app.post("/api/register", async (req, res) => {
     const user = rows[0];
 
     // Generate access token
-    const accessToken = jwt.sign({ userId: user.UserID }, JWT_SECRET, {
+    const accessToken = jwt.sign({ userId: user.UserID }, jwtSecret, {
       expiresIn: "7d",
     });
 
@@ -103,7 +110,7 @@ app.post("/api/login", async (req, res) => {
     }
 
     // Generate access token
-    const accessToken = jwt.sign({ userId: user.UserID }, JWT_SECRET, {
+    const accessToken = jwt.sign({ userId: user.UserID }, jwtSecret, {
       expiresIn: "7d",
     });
 
