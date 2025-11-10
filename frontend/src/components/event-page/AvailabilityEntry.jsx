@@ -116,6 +116,7 @@ const AvailabilityEntry = ({
             <input
               type="date"
               className={`input input-bordered input-sm flex-1 ${slot.error ? "input-error" : ""}`}
+              value={slot.selectedDate}
               min={startDate.split("T")[0]}
               max={endDate.split("T")[0]}
               onChange={(e) => updateDate(e.target.value)}
