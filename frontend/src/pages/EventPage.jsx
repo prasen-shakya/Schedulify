@@ -75,8 +75,11 @@ export const EventPage = () => {
       />
       <div className="mx-8 my-8 lg:mx-40">
         <div className="flex w-full flex-col justify-between md:flex-row">
-          <div className="flex max-w-[70%] flex-col gap-2">
-            <h1 className="text-xl">{eventDetails?.Name}</h1>
+          <div className="flex max-w-[70%] flex-col gap-4">
+            <div>
+              <h1 className="text-xl">{eventDetails?.Name}</h1>
+              <p className="text-xs font-light text-gray-500">{`${eventDetails?.StartDate.split("T")[0].split("-").slice(-2).join("/")} - ${eventDetails?.EndDate.split("T")[0].split("-").slice(-2).join("/")}`}</p>
+            </div>
             <p className="text-sm font-light text-gray-500">
               {eventDetails?.Description}
             </p>
