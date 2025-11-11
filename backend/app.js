@@ -359,6 +359,44 @@ function orderAvailabilitiesByUser(availabilities) {
   return result;
 }
 
+app.get("/api/getUserAvailability/:eventId" , authenticateToken, async (req, res)=> {
+
+  const {eventId} = req.params;
+  const userID = req.user.userId;
+
+  try{
+    
+    // get db connection
+    const connection = await getDbConnection();
+
+    // search in database for Availability with matching userID and eventID
+    const [result] = await connection.query("SELECT Date, StartTime, EndTime FROM Availability WHERE EventID = ? AND UserID = ? ", [eventId, userID]);
+
+    // to convert camelCase
+    const toCamel = (str) => str.charAt(0).toLowerCase() + str.slice(1);
+
+    // result returns date as a Time type, so to truncate and get just the actual date convert it to a sting 
+    const formatResults = result.map(results => {
+      const formatted = {};
+      for (const key in results) {
+        formatted[toCamel(key)] = results[key];
+      }
+      formatted.date = new Date(formatted.date).toISOString().slice(0, 10);
+      return formatted;
+    });
+
+    res.status(200).send(formatResults);
+  }
+  catch(error)
+  {
+    //respond with error and message
+    console.error(error);
+    res.status(500).json({ message: `Server error: ${error.message}` });
+  }
+  
+});
+
+
 app.get("/api/getEvent/:eventId", async (req, res) => {
   const { eventId } = req.params;
 
