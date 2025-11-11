@@ -6,13 +6,14 @@ const bcrypt = require("bcrypt");
 const { getDbConnection, closePool } = require("./database");
 const { uuid } = require("uuidv4");
 const path = require("path");
+const { groupEnd } = require("console");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 const buildPath = path.join(path.dirname(__dirname), "frontend/dist");
 
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = process.env.JWT_SECRET || "myles<3";
 
 app.use(cookieParser());
 app.use(express.json());
@@ -301,10 +302,11 @@ app.get("/api/getAvailability/:eventId", async (req, res) => {
 
     // query is in a variable for readability
     const query =
-      "SELECT U.Name AS UserName, A.Date AS AvailabilityDate, A.StartTime, A.EndTime FROM User U JOIN Availability A ON U.UserID = A.UserID WHERE A.EventID = ? ORDER BY A.Date, A.StartTime;";
+      "SELECT U.Name AS UserName,  U.UserID AS UserID, A.Date AS AvailabilityDate, A.StartTime, A.EndTime FROM User U JOIN Availability A ON U.UserID = A.UserID WHERE A.EventID = ? ORDER BY A.Date, A.StartTime;";
 
     // get results from db
     const [availabilities] = await connection.query(query, [eventId]);
+    // console.log(availabilities);
 
     // format the availabilities by users for frontend
     const availabilitiesByUsers = orderAvailabilitiesByUser(availabilities);
@@ -324,29 +326,31 @@ function orderAvailabilitiesByUser(availabilities) {
   // go through each row in availabilities
   availabilities.forEach((row) => {
     const user = row.UserName;
+    const id = row.UserID;
     const date = new Date(row.AvailabilityDate).toISOString().split("T")[0];
 
     // if user doesn't exist yet, add them
     if (!grouped[user]) {
-      grouped[user] = {};
+      grouped[user] = { id, dates: {} };
     }
 
     // if date doesn't exist under that user yet, add it
-    if (!grouped[user][date]) {
-      grouped[user][date] = [];
+    if (!grouped[user].dates[date]) {
+      grouped[user].dates[date] = [];
     }
 
     // push time ranges
-    grouped[user][date].push({
+    grouped[user].dates[date].push({
       startTime: row.StartTime,
       endTime: row.EndTime,
     });
   });
 
   // convert the grouped object into format frontend wants
-  const result = Object.entries(grouped).map(([user, dates]) => ({
+  const result = Object.entries(grouped).map(([user, data]) => ({
     user,
-    availability: Object.entries(dates).map(([date, times]) => ({
+    userId: data.id,
+    availability: Object.entries(data.dates).map(([date, times]) => ({
       date,
       times,
     })),
