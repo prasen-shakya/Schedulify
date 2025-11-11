@@ -6,15 +6,18 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   // Check authentication on mount because JWT might expire
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await axios.get(`/checkAuthenticationStatus`);
+        const response = await axios.get(`/checkAuthenticationStatus`);
         setIsAuthenticated(true);
+        setUserId(response.data.userId);
       } catch {
         setIsAuthenticated(false);
+        setUserId(null);
       }
     };
 
@@ -27,12 +30,13 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      await axios.post(`/login`, {
+      const response = await axios.post(`/login`, {
         email,
         password,
       });
 
       setIsAuthenticated(true);
+      setUserId(response.data.userId);
 
       return "success";
     } catch (error) {
@@ -48,6 +52,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.post(`/logout`);
       setIsAuthenticated(false);
+      setUserId(null);
     } catch (error) {
       console.error(
         "Logout error:",
@@ -58,12 +63,13 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      await axios.post(`/register`, {
+      const response = await axios.post(`/register`, {
         name,
         email,
         password,
       });
       setIsAuthenticated(true);
+      setUserId(response.data.userId);
       return "success";
     } catch (error) {
       console.error(
@@ -89,6 +95,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
+        userId,
         isAuthenticated,
         requireAuth,
         showAuthenticationModal,

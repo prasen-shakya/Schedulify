@@ -7,45 +7,32 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 
 export const EventPage = () => {
-  const { requireAuth } = useAuth();
+  const { userId, requireAuth } = useAuth();
   const navigate = useNavigate();
 
   const { eventId } = useParams();
   const [eventDetails, setEventDetails] = useState(null);
   const [participants, setParticipants] = useState(null);
   const [availabilityData, setAvailabilityData] = useState(null);
-  const [userId, setUserId] = useState(null);
   const [userAvailability, setUserAvailability] = useState(null);
   const [highlightedParticipant, setHighlightedParticipant] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingEvent, setIsLoadingEvent] = useState(true);
+  const [isLoadingAvailability, setIsLoadingAvailability] = useState(true);
+  const [isLoadingParticipants, setIsLoadingParticipants] = useState(true);
   const [refreshCalendar, setRefreshCalendar] = useState(false);
-
-  // Check authentication on mount because JWT might expire
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get(`/checkAuthenticationStatus`);
-        setUserId(response.data.userId);
-      } catch {
-        setUserId(null);
-      }
-    };
-
-    checkAuth();
-  }, []);
 
   useEffect(() => {
     // Fetch event details using eventId when component mounts
     const fetchEventDetails = async () => {
       try {
         const response = await axios.get(`/getEvent/${eventId}`);
-
         setEventDetails(response.data);
-        setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch event details:", error);
         navigate("/404");
+      } finally {
+        setIsLoadingEvent(false);
       }
     };
 
@@ -54,22 +41,26 @@ export const EventPage = () => {
 
   useEffect(() => {
     const fetchAvailabilities = async () => {
+      setIsLoadingAvailability(true);
       try {
         const response = await axios.get(`/getAvailability/${eventId}`);
-
         setAvailabilityData(response.data);
       } catch (error) {
         console.error("Failed to fetch availabilities:", error);
+      } finally {
+        setIsLoadingAvailability(false);
       }
     };
 
     const fetchParticipants = async () => {
+      setIsLoadingParticipants(true);
       try {
         const response = await axios.get(`/getEventParticipants/${eventId}`);
-
         setParticipants(response.data);
       } catch (error) {
         console.error("Failed to fetch participants:", error);
+      } finally {
+        setIsLoadingParticipants(false);
       }
     };
 
@@ -90,9 +81,12 @@ export const EventPage = () => {
     document.getElementById("availability-modal").showModal();
   };
 
-  return isLoading ? (
-    <div></div>
-  ) : (
+  // Show loading spinner while event details are loading
+  if (isLoadingEvent) {
+    return <div></div>;
+  }
+
+  return (
     <>
       <AvailabilityModal
         event={eventDetails}
@@ -137,19 +131,25 @@ export const EventPage = () => {
           </div>
         </div>
         <div className="mt-12 flex flex-col gap-8 lg:flex-row">
-          <WeeklyCalendar
-            earliestStartDate={eventDetails?.StartDate}
-            latestEndDate={eventDetails?.EndDate}
-            earliestStartTime={eventDetails?.StartTime}
-            latestEndTime={eventDetails?.EndTime}
-            availabilityData={availabilityData}
-            participants={participants}
-            setHighlightedParticipant={setHighlightedParticipant}
-          />
-          <Participants
-            participants={participants}
-            highlightedParticipant={highlightedParticipant}
-          />
+          {isLoadingAvailability || isLoadingParticipants ? (
+            <div></div>
+          ) : (
+            <>
+              <WeeklyCalendar
+                earliestStartDate={eventDetails?.StartDate}
+                latestEndDate={eventDetails?.EndDate}
+                earliestStartTime={eventDetails?.StartTime}
+                latestEndTime={eventDetails?.EndTime}
+                availabilityData={availabilityData}
+                participants={participants}
+                setHighlightedParticipant={setHighlightedParticipant}
+              />
+              <Participants
+                participants={participants}
+                highlightedParticipant={highlightedParticipant}
+              />
+            </>
+          )}
         </div>
       </div>
     </>

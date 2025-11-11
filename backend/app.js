@@ -83,7 +83,7 @@ app.post("/api/register", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(201).json({ message: "User registered successfully." });
+    res.status(201).json({ userId: user.UserID, message: "User registered successfully." });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: `Server error: ${err.message}` });
@@ -122,7 +122,7 @@ app.post("/api/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(200).json({ message: "Login successful." });
+    res.status(200).json({ userId: user.UserID, message: "Login successful." });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: `Server error: ${err.message}` });
