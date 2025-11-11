@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 
 const buildPath = path.join(path.dirname(__dirname), "frontend/dist");
 
-const jwtSecret = process.env.JWT_SECRET || "myles<3";
+const jwtSecret = process.env.JWT_SECRET || "jwttoken";
 
 app.use(cookieParser());
 app.use(express.json());
