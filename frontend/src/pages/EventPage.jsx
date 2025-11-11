@@ -14,6 +14,7 @@ export const EventPage = () => {
   const [eventDetails, setEventDetails] = useState(null);
   const [participants, setParticipants] = useState(null);
   const [availabilityData, setAvailabilityData] = useState(null);
+  const [highlightedParticipant, setHighlightedParticipant] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshCalendar, setRefreshCalendar] = useState(false);
@@ -118,8 +119,12 @@ export const EventPage = () => {
             latestEndTime={eventDetails?.EndTime}
             availabilityData={availabilityData}
             participants={participants}
+            setHighlightedParticipant={setHighlightedParticipant}
           />
-          <Participants participants={participants} />
+          <Participants
+            participants={participants}
+            highlightedParticipant={highlightedParticipant}
+          />
         </div>
       </div>
     </>

@@ -7,6 +7,7 @@ export default function WeeklyCalendar({
   latestEndTime,
   availabilityData,
   participants,
+  setHighlightedParticipant,
 }) {
   const [startIndex, setStartIndex] = useState(0);
 
@@ -62,7 +63,7 @@ export default function WeeklyCalendar({
           for (let hour = start; hour < end; hour++) {
             const key = `${date}-${hour}`;
             if (!map[key]) map[key] = [];
-            map[key].push(u.user);
+            map[key].push(u.userId);
           }
         });
       });
@@ -154,12 +155,15 @@ export default function WeeklyCalendar({
                 return (
                   <div
                     className="tooltip"
-                    data-tip={isAvailable ? availablePeople.join(", ") : ""}
                     key={`${day.toISOString()}-${hour}-tooltip`}
                   >
                     <div
                       key={`${day.toISOString()}-${hour}`}
                       className={`border-base-300 h-[30px] border-r border-b ${index == 0 ? "border-l" : ""}`}
+                      onMouseEnter={() =>
+                        setHighlightedParticipant(availablePeople)
+                      }
+                      onMouseLeave={() => setHighlightedParticipant(null)}
                       style={
                         isAvailable
                           ? {
