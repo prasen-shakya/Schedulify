@@ -14,10 +14,26 @@ export const EventPage = () => {
   const [eventDetails, setEventDetails] = useState(null);
   const [participants, setParticipants] = useState(null);
   const [availabilityData, setAvailabilityData] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [userAvailability, setUserAvailability] = useState(null);
   const [highlightedParticipant, setHighlightedParticipant] = useState(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [refreshCalendar, setRefreshCalendar] = useState(false);
+
+  // Check authentication on mount because JWT might expire
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(`/checkAuthenticationStatus`);
+        setUserId(response.data.userId);
+      } catch {
+        setUserId(null);
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     // Fetch event details using eventId when component mounts
@@ -51,7 +67,6 @@ export const EventPage = () => {
       try {
         const response = await axios.get(`/getEventParticipants/${eventId}`);
 
-        console.log("Participants response:", response.data);
         setParticipants(response.data);
       } catch (error) {
         console.error("Failed to fetch participants:", error);
@@ -61,6 +76,15 @@ export const EventPage = () => {
     fetchAvailabilities();
     fetchParticipants();
   }, [eventId, refreshCalendar]);
+
+  useEffect(() => {
+    if (userId && availabilityData) {
+      const userAvail = availabilityData.find(
+        (entry) => entry.userId === userId,
+      );
+      setUserAvailability(userAvail || null);
+    }
+  }, [userId, availabilityData]);
 
   const showAvailabilityModal = () => {
     document.getElementById("availability-modal").showModal();
@@ -73,6 +97,7 @@ export const EventPage = () => {
       <AvailabilityModal
         event={eventDetails}
         onUpdate={() => setRefreshCalendar((prev) => !prev)}
+        userAvailability={userAvailability}
       />
       <div className="mx-8 my-8 lg:mx-40">
         <div className="flex w-full flex-col justify-between md:flex-row">

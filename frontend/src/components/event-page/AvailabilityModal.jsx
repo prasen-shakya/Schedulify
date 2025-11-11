@@ -1,12 +1,31 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 import AvailabilityEntry from "./AvailabilityEntry.jsx";
 
-const AvailabilityModal = ({ event, onUpdate }) => {
+const AvailabilityModal = ({ event, onUpdate, userAvailability }) => {
   const [availabilitySlots, setAvailabilitySlots] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [apiError, setApiError] = useState("");
+
+  useEffect(() => {
+    if (userAvailability) {
+      const availability = userAvailability.availability.map((slot) => {
+        return {
+          slotID: uuid(),
+          selectedDate: slot.date,
+          times: slot.times.map((time) => ({
+            startTime: time.startTime,
+            endTime: time.endTime,
+            timeID: uuid(),
+          })),
+          error: "",
+        };
+      });
+
+      setAvailabilitySlots(availability);
+    }
+  }, [userAvailability]);
 
   // --- Functions to manage availability slots ---
 
