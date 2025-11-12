@@ -16,13 +16,7 @@ const jwtSecret = process.env.JWT_SECRET || "jwttoken";
 
 app.use(cookieParser());
 app.use(express.json());
-if (process.env.NODE_ENV == "production") {
-  app.use(express.static(buildPath));
-
-  app.get(/(.*)/, (req, res) => {
-    res.sendFile(path.join(buildPath, "index.html"));
-  });
-} else {
+if (process.env.NODE_ENV != "production") {
   app.use(
     cors({
       origin: "http://localhost:5173",
@@ -400,6 +394,14 @@ app.get("/api/getEventParticipants/:eventId", async (req, res) => {
     res.status(400).json({ message: `Server error: ${err.message}` });
   }
 });
+
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static(buildPath));
+
+  app.get(/(.*)/, (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
+}
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
