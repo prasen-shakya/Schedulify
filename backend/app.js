@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 const { getDbConnection, closePool } = require("./database");
 const { uuid } = require("uuidv4");
 const path = require("path");
-const { groupEnd } = require("console");
 
 const app = express();
 const port = process.env.PORT || 3000;
