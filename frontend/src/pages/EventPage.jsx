@@ -100,7 +100,7 @@ export const EventPage = () => {
               <h1 className="text-xl">{eventDetails?.Name}</h1>
               <p className="text-xs font-light text-gray-500">{`${eventDetails?.StartDate.split("T")[0].split("-").slice(-2).join("/")} - ${eventDetails?.EndDate.split("T")[0].split("-").slice(-2).join("/")}`}</p>
             </div>
-            <p className="text-sm font-light text-gray-500">
+            <p className="mb-4 text-sm font-light text-gray-500 md:mb-0">
               {eventDetails?.Description}
             </p>
           </div>

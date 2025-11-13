@@ -13,10 +13,10 @@ export const Home = () => {
       <EventModal />
 
       <div className="flex flex-1 flex-col items-center justify-center gap-2 p-5">
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-center text-4xl font-bold">
           Schedule Events Without A Hassle.
         </h1>
-        <p className="text-secondary">
+        <p className="text-secondary text-center">
           Schedule group events with ease without having to worry about
           scheduling conflicts.
         </p>
