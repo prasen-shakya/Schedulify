@@ -26,6 +26,11 @@ if (process.env.NODE_ENV != "production") {
   );
 }
 
+/*
+Function that authenticates token for continued session
+- retrieves cookie from request
+- checks if token is verified, if it is then just exit, if it isn't then throw 400
+ */
 function authenticateToken(req, res, next) {
   const token = req.cookies.token;
   if (!token) return res.status(401).json({ message: "Not authenticated" });
@@ -44,6 +49,14 @@ function authenticateToken(req, res, next) {
   }
 }
 
+/*
+POST that registers a user into the database
+- receives name, email, and password from request body
+- encrypts password
+- makes database insertion
+- creates access token
+- returns 200 for successful account creation and login
+ */
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -83,6 +96,13 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
+/*
+POST method that logs in existing user
+- retrieves email and password from request body.
+- confirms user exists, if not return 400
+- generates access token
+- returns 200 for successful login
+ */
 app.post("/api/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -122,6 +142,11 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+/*
+POST that logs out user
+- clears token
+- returns 200 for successful logout
+ */
 app.post("/api/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
@@ -131,10 +156,30 @@ app.post("/api/logout", (req, res) => {
   res.status(200).json({ message: "Logged out successfully." });
 });
 
+/*
+GET that checks token
+- returns 200 for successful authentication
+ */
 app.get("/api/checkAuthenticationStatus", authenticateToken, (req, res) => {
   res.status(200).json({ userId: req.user.userId, message: "Authenticated" });
 });
 
+/*
+POST method that creates events
+- reads event details from request
+    - name
+    - description
+    - startDate
+    - endDate
+    - startTime
+    - endTime
+- also retrieves organizer ID
+- creates event ID using uuid
+- checks if name is greater than 20 characters
+- checks if description is less than 150 characters
+- checks if dates are correct chronically
+- makes database insertion, throws 201 for successful entry
+ */
 app.post("/api/createEvent", authenticateToken, async (req, res) => {
   try {
     // Get inputs from the request
@@ -179,6 +224,15 @@ app.post("/api/createEvent", authenticateToken, async (req, res) => {
   }
 });
 
+/*
+Function that inserts user availability into database
+- takes in userID, eventID, and a var that contains availability
+- if availability is empty, return string defining issue
+- uses for loop that inserts availability into database
+    - checks for start and end times to be correct chronologically
+    - creates ID for each availability insertion using uuid
+- returns message that shows insertion was successful
+ */
 async function insertAvailability(userID, eventID, availabilitySlots) {
   // get connection to database
   const pool = await getDbConnection();
@@ -231,6 +285,11 @@ async function insertAvailability(userID, eventID, availabilitySlots) {
   }
 }
 
+/*
+Function that deletes availability
+- takes in eventID and userID
+- makes query to delete availability of specific user from database
+ */
 async function deleteAvailability(eventID, userID) {
   try {
     // get connection to database
@@ -250,6 +309,17 @@ async function deleteAvailability(eventID, userID) {
   }
 }
 
+/*
+POST that updates the availability of a user
+- retrieves eventID and availability from request
+- also retrieves userID
+- organizes the availability data into objects
+- gets array of specific event and user from database
+    - if array is empty then insert the info from the req into the database
+    - if array is not empty then delete the availability of that user
+- insert new availability into database
+- return 201 for proper update
+ */
 app.post("/api/updateAvailability", authenticateToken, async (req, res) => {
   const { eventID, availability } = req.body;
   const userID = req.user.userId;
@@ -286,6 +356,12 @@ app.post("/api/updateAvailability", authenticateToken, async (req, res) => {
   }
 });
 
+/*
+GET that sends back the availability of an event
+- retrieves eventID from request
+- makes query to database to get all of the availability from the database
+- organizes the availability by user and sends it back along with 200
+ */
 app.get("/api/getAvailability/:eventId", async (req, res) => {
   const { eventId } = req.params;
 
@@ -313,6 +389,11 @@ app.get("/api/getAvailability/:eventId", async (req, res) => {
   }
 });
 
+/*
+Function that orders availability by user
+- takes in array of availabilities
+- for each availability, organize the information about the user, id, and dates
+ */
 function orderAvailabilitiesByUser(availabilities) {
   const grouped = {};
 
@@ -352,6 +433,13 @@ function orderAvailabilitiesByUser(availabilities) {
   return result;
 }
 
+/*
+GET that sends back the information about an event
+- retrieves evenID from request
+- gets all information about event from database
+- returns 404 is event isnt found
+- returns 200 is it is found and sends it to frontend
+ */
 app.get("/api/getEvent/:eventId", async (req, res) => {
   const { eventId } = req.params;
 
@@ -371,6 +459,14 @@ app.get("/api/getEvent/:eventId", async (req, res) => {
   }
 });
 
+/*
+GET that sends back information about an events participants
+- retrieves event ID from request
+- makes query to check if event exists in database
+    - if it doesnt send 404
+- makes another query to get all userIDs associated with eventID to database
+- sends that information along with 200
+ */
 app.get("/api/getEventParticipants/:eventId", async (req, res) => {
   const { eventId } = req.params;
 
@@ -403,11 +499,21 @@ if (process.env.NODE_ENV == "production") {
   });
 }
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
 
 process.on("SIGINT", async () => {
   await closePool();
   process.exit(0);
 });
+
+
+let server;
+
+if (process.env.NODE_ENV !== "test" && require.main === module) {
+    server = app.listen(port, () => console.log(`🚀 Listening on port ${port}`));
+}
+
+
+
+//app.listen(port, () => console.log(`🚀 Listening on port ${port}`));
+
+module.exports = app;
