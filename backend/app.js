@@ -1,3 +1,4 @@
+require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
@@ -30,9 +31,20 @@ function authenticateToken(req, res, next) {
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ message: "Not authenticated" });
 
+    const db = getDbConnection();
+
     try {
         const decoded = jwt.verify(token, jwtSecret);
         req.user = decoded;
+
+        const existing = db
+            .prepare("SELECT * FROM User WHERE UserID = ?")
+            .get(req.user.userId);
+
+        if (!existing) {
+            res.clearCookie("token");
+            return res.status(403).json({ message: "User does not exist" });
+        }
         next();
     } catch {
         res.clearCookie("token");

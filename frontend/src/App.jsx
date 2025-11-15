@@ -10,6 +10,7 @@ const App = () => {
   axios.defaults.withCredentials = true;
   axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 
+  console.log(import.meta.env.VITE_API_URL);
   return (
     <AuthProvider>
       <BrowserRouter>

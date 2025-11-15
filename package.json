@@ -1,19 +1,19 @@
 {
-  "name": "schedulify",
-  "version": "1.0.0",
-  "description": "Schedulifyis a web application that simplifies scheduling group events",
-  "scripts": {
-    "frontend": "cd frontend && npm run dev",
-    "backend": "cd backend && node --watch app.js",
-    "install:backend": "cd backend && npm install",
-    "install:frontend": "cd frontend && npm install",
-    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
-    "install:all": "npm install && npm run install:backend && npm run install:frontend"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "concurrently": "^9.2.1"
-  }
+    "name": "schedulify",
+    "version": "1.0.0",
+    "description": "Schedulifyis a web application that simplifies scheduling group events",
+    "scripts": {
+        "frontend": "cd frontend && npm run dev",
+        "backend": "cd backend && node --watch app.js",
+        "install:backend": "cd backend && npm install",
+        "install:frontend": "cd frontend && npm install",
+        "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+        "install:all": "npm install && npm run install:backend && npm run install:frontend"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "concurrently": "^9.2.1"
+    }
 }
