@@ -33,8 +33,8 @@ export default function WeeklyCalendar({
 
   const weekdays = useMemo(() => {
     if (!earliestStartDate || !latestEndDate) return [];
-    const start = new Date(earliestStartDate);
-    const end = new Date(latestEndDate);
+    const start = new Date(earliestStartDate + "T00:00:00");
+    const end = new Date(latestEndDate + "T00:00:00");
     const days = [];
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       days.push(new Date(d));
