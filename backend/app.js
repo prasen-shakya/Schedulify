@@ -114,7 +114,7 @@ POST method that logs in existing user
 - generates access token
 - returns 200 for successful login
  */
-app.post("/api/login", async (req, res) => {
+app.post("/api/login", async (req   , res) => {
     const { email, password } = req.body;
 
     try {
