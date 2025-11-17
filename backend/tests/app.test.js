@@ -1,6 +1,57 @@
+/**
+ * MOCK DATABASE
+ */
+jest.mock("../database", () => {
+    // Track USERS for tests — this simulates your database table.
+    let users = [];
+
+    const mockQuery = jest.fn(async (sql, params) => {
+        // ----- SELECT * FROM User WHERE Email = ? -----
+        if (sql.includes("FROM User WHERE Email = ?")) {
+            const email = params[0];
+            const found = users.filter(u => u.Email === email);
+            return [found];
+        }
+
+        // ----- INSERT INTO User (Name, Email, Password) -----
+        if (sql.startsWith("INSERT INTO User")) {
+            const [name, email, password] = params;
+            const newUser = {
+                UserID: users.length + 1,
+                Name: name,
+                Email: email,
+                Password: password,
+            };
+            users.push(newUser);
+            return [{ insertId: newUser.UserID }];
+        }
+
+        // Default empty result for everything else
+        return [[]];
+    });
+
+    return {
+        getDbConnection: jest.fn(async () => {
+            return {
+                query: mockQuery,
+            };
+        }),
+        closePool: jest.fn(async () => {}),
+    };
+});
+
+/**
+ * MOCK BCRYPT
+ */
+jest.mock("bcrypt", () => ({
+    hash: jest.fn(async (pw) => `hashed-${pw}`),
+    compare: jest.fn(async (pw, hashed) => hashed === `hashed-${pw}`),
+}));
+
 const request = require("supertest");
-const app = require("../app.js");
 const { closePool } = require("../database");
+const app = require("../app.js");
+
 
 let authCookie;
 let userID;
@@ -9,15 +60,17 @@ describe("User Login/Registration", () => {
     // This is for tests regarding user account creation
 
     describe("POST /register", () => {
-        // test("Returns 201 for successful account creation.", async () => {
-        //     const res = await request(app).post("/api/register").send({
-        //         name: "John Doe",
-        //         email: "jdoe@gmail.com",
-        //         password: "password",
-        //     });
+        test("Returns 201 for successful account creation.", async () => {
+            const res = await request(app).post("/api/register").send({
+                name: "John Doe",
+                email: "jdoe@gmail.com",
+                password: "password",
+            });
 
-        //     expect(res.status).toBe(201);
-        // });
+            userID = res.body.userId;
+
+            expect(res.status).toBe(201);
+        });
 
         test("Should return 400 because email already exists.", async () => {
             const res = await request(app).post("/api/register").set("Content-Type", "application/json").send({
@@ -60,7 +113,6 @@ describe("User Login/Registration", () => {
         });
 
         authCookie = res.headers["set-cookie"];
-        userID = res.body.userId;
         expect(res.status).toBe(200);
     });
 
@@ -76,6 +128,7 @@ describe("User Login/Registration", () => {
         });
     });
 });
+
 
 describe("Tests for User actions: Creating Events, Updating Availability.", () => {
 
