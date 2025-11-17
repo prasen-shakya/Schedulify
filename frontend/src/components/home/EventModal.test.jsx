@@ -107,9 +107,9 @@ describe("EventModal Component", () => {
     // Fill valid dates
     const startDateInput = document.getElementById("start-date");
     const endDateInput = document.getElementById("end-date");
-    fireEvent.change(startDateInput, { target: { value: "2025-11-05" } });
+    fireEvent.change(startDateInput, { target: { value: "2026-11-13" } });
     await waitFor(() => expect(endDateInput).not.toBeDisabled());
-    fireEvent.change(endDateInput, { target: { value: "2025-11-05" } });
+    fireEvent.change(endDateInput, { target: { value: "" } });
 
     // Invalid times (end earlier than start)
     const startTimeSelect = document.getElementById("start-time");
