@@ -14,13 +14,6 @@ export const Navbar = () => {
         </div> 
         
         <div className="flex items-center gap-4"> {/* RIGHT ALIGN BUTTONS */}
-        <div>
-        <a href="/#how"><button className="btn btn-ghost mt-2 h-10">
-            
-          How to Use
-        </button></a>
-        
-        </div>
         <button
           className="btn btn-primary mt-2 h-10"
           onClick={isAuthenticated ? signOut : showAuthenticationModal}
