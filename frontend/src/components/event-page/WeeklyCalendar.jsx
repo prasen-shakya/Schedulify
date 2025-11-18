@@ -9,21 +9,27 @@ export default function WeeklyCalendar({
   participants,
   setHighlightedParticipant,
 }) {
+  // Tracks which day index the view starts on
   const [startIndex, setStartIndex] = useState(0);
 
+  // Number of days shown on screen depending on screen size
   const [visibleDays, setVisibleDays] = useState(5);
 
-  // Update visible days based on screen size
+  // Adjust visible days for responsiveness
   useEffect(() => {
     const updateVisibleDays = () => {
       const width = window.innerWidth;
       if (width < 640) {
+        // Small screens: show 2 days
         setVisibleDays(2);
       } else if (width < 768) {
+        // Medium-small screens: show 3 days
         setVisibleDays(3);
       } else if (width < 1024) {
+        // Medium screens: show 4 days
         setVisibleDays(4);
       } else {
+        // Larger screens: show 5 days
         setVisibleDays(5);
       }
     };
@@ -31,38 +37,49 @@ export default function WeeklyCalendar({
     updateVisibleDays();
   }, []);
 
+  // Generate all days between earliest and latest dates
   const weekdays = useMemo(() => {
     if (!earliestStartDate || !latestEndDate) return [];
     const start = new Date(earliestStartDate + "T00:00:00");
     const end = new Date(latestEndDate + "T00:00:00");
     const days = [];
+
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       days.push(new Date(d));
     }
+
     return days;
   }, [earliestStartDate, latestEndDate]);
 
+  // Convert time range into a list of hour values (e.g. 9,10,11,...)
   const hours = useMemo(() => {
     if (!earliestStartTime || !latestEndTime) return [];
+
     const start = parseInt(earliestStartTime.split(":")[0]);
     const end = parseInt(latestEndTime.split(":")[0]);
+
     return Array.from({ length: end - start }, (_, i) => start + i);
   }, [earliestStartTime, latestEndTime]);
 
+  // Build a quick-lookup map keyed by "YYYY-MM-DD-hour" → [userIds]
   const availabilityMap = useMemo(() => {
     const map = {};
-
     if (!availabilityData) return map;
 
     availabilityData.forEach((u) => {
       u.availability.forEach((slot) => {
         const date = slot.date;
+
         slot.times.forEach((timeSlot) => {
           const start = parseInt(timeSlot.startTime.split(":")[0], 10);
           const end = parseInt(timeSlot.endTime.split(":")[0], 10);
+
+          // Fill all hours between start and end
           for (let hour = start; hour < end; hour++) {
             const key = `${date}-${hour}`;
             if (!map[key]) map[key] = [];
+
+            // Add the user to this hour slot
             map[key].push(u.userId);
           }
         });
@@ -72,30 +89,35 @@ export default function WeeklyCalendar({
     return map;
   }, [availabilityData]);
 
+  // Move calendar forward
   const handleNext = () => {
     if (startIndex + visibleDays < weekdays.length) {
       setStartIndex(startIndex + visibleDays);
     }
   };
 
+  // Move calendar backward
   const handlePrev = () => {
     if (startIndex - visibleDays >= 0) {
       setStartIndex(startIndex - visibleDays);
     }
   };
 
+  // Slice visible portion of the days list
   const currentDays = weekdays.slice(startIndex, startIndex + visibleDays);
 
   return (
     <div className="max-w-full flex-1 overflow-auto px-1 xl:max-w-3/4">
       <div className="flex max-w-full min-w-fit items-start gap-0">
         <div className="flex-1">
+          {/* Days header row */}
           <div
             className="bg-base-100 grid scale-100 text-[0.7rem]"
             style={{
               gridTemplateColumns: `minmax(2.5rem, auto) repeat(${currentDays.length > visibleDays ? visibleDays : currentDays.length}, 1fr)`,
             }}
           >
+            {/* Previous button */}
             <div className="flex w-10 justify-center">
               <button
                 className="btn btn-ghost btn-sm"
@@ -105,7 +127,6 @@ export default function WeeklyCalendar({
                 <svg
                   aria-label="Previous"
                   className="size-4 fill-current"
-                  slot="previous"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                 >
@@ -117,6 +138,7 @@ export default function WeeklyCalendar({
               </button>
             </div>
 
+            {/* Render day labels */}
             {currentDays.map((day) => (
               <div
                 key={day.toISOString()}
@@ -131,6 +153,7 @@ export default function WeeklyCalendar({
             ))}
           </div>
 
+          {/* Hour rows */}
           {hours.map((hour) => (
             <div
               key={hour}
@@ -139,6 +162,7 @@ export default function WeeklyCalendar({
                 gridTemplateColumns: `minmax(2.5rem, auto) repeat(${currentDays.length > visibleDays ? visibleDays : currentDays.length}, 1fr)`,
               }}
             >
+              {/* Time label */}
               <div className="border-base-300 w-10 pr-1">
                 {new Date(0, 0, 0, hour).toLocaleTimeString("en-US", {
                   hour: "numeric",
@@ -146,6 +170,7 @@ export default function WeeklyCalendar({
                 })}
               </div>
 
+              {/* Day × hour cells */}
               {currentDays.map((day, index) => {
                 const availablePeople =
                   availabilityMap[`${day.toISOString().split("T")[0]}-${hour}`];
@@ -159,7 +184,9 @@ export default function WeeklyCalendar({
                   >
                     <div
                       key={`${day.toISOString()}-${hour}`}
-                      className={`border-base-300 h-[30px] border-r border-b ${index == 0 ? "border-l" : ""}`}
+                      className={`border-base-300 h-[30px] border-r border-b ${
+                        index == 0 ? "border-l" : ""
+                      }`}
                       onMouseEnter={() =>
                         setHighlightedParticipant(availablePeople)
                       }
@@ -167,7 +194,12 @@ export default function WeeklyCalendar({
                       style={
                         isAvailable
                           ? {
-                              backgroundColor: `rgba(0, 130, 207, ${Math.max(0.15, availablePeople.length / (participants?.length || 1))})`,
+                              // Shade increases with number of available people
+                              backgroundColor: `rgba(0, 130, 207, ${Math.max(
+                                0.15,
+                                availablePeople.length /
+                                  (participants?.length || 1),
+                              )})`,
                             }
                           : {}
                       }
@@ -179,6 +211,7 @@ export default function WeeklyCalendar({
           ))}
         </div>
 
+        {/* Next button */}
         <div className="flex w-10 justify-center">
           <button
             className="btn btn-ghost btn-sm"
@@ -188,7 +221,6 @@ export default function WeeklyCalendar({
             <svg
               aria-label="Next"
               className="size-4 fill-current"
-              slot="next"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
             >
