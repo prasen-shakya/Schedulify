@@ -15,8 +15,8 @@ describe("WeeklyCalendar Component", () => {
   });
 
   const baseProps = {
-    earliestStartDate: "2025-01-01",
-    latestEndDate: "2025-01-10",
+    earliestStartDate: "2026-01-01",
+    latestEndDate: "2026-01-10",
     earliestStartTime: "09:00",
     latestEndTime: "12:00",
     participants: ["A", "B", "C"],
@@ -25,7 +25,7 @@ describe("WeeklyCalendar Component", () => {
         userId: "A",
         availability: [
           {
-            date: "2025-01-02",
+            date: "2026-01-02",
             times: [{ startTime: "09:00", endTime: "11:00" }],
           },
         ],
@@ -38,11 +38,11 @@ describe("WeeklyCalendar Component", () => {
     render(<WeeklyCalendar {...baseProps} />);
 
     // Expect 5 days: Jan 1 -> Jan 5
-    expect(screen.getByText("Tue, Dec 31")).toBeInTheDocument();
-    expect(screen.getByText("Wed, Jan 1")).toBeInTheDocument();
-    expect(screen.getByText("Thu, Jan 2")).toBeInTheDocument();
-    expect(screen.getByText("Fri, Jan 3")).toBeInTheDocument();
-    expect(screen.getByText("Sat, Jan 4")).toBeInTheDocument();
+    expect(screen.getByText("Thu, Jan 1")).toBeInTheDocument();
+    expect(screen.getByText("Fri, Jan 2")).toBeInTheDocument();
+    expect(screen.getByText("Sat, Jan 3")).toBeInTheDocument();
+    expect(screen.getByText("Sun, Jan 4")).toBeInTheDocument();
+    expect(screen.getByText("Mon, Jan 5")).toBeInTheDocument();
   });
 
   it("renders correct hour rows", () => {
@@ -57,9 +57,9 @@ describe("WeeklyCalendar Component", () => {
   it("renders availability slots with background color", () => {
     const { container } = render(<WeeklyCalendar {...baseProps} />);
 
-    // Target the 2025-01-02 at 09:00 cell
+    // Target the 2026-01-02 at 09:00 cell
     const cell = container.querySelector(
-      '[key="2025-01-02T00:00:00.000Z-9"]'
+      '[key="2026-01-02T00:00:00.000Z-9"]'
     );
 
     // The component actually renders <div class="tooltip"><div style="backgroundColor">...</div></div>
@@ -100,7 +100,7 @@ describe("WeeklyCalendar Component", () => {
   it("moves forward when Next is clicked", () => {
     const longProps = {
       ...baseProps,
-      latestEndDate: "2025-01-10", // More days → allows scroll
+      latestEndDate: "2026-01-10", // More days → allows scroll
     };
 
     render(<WeeklyCalendar {...longProps} />);
@@ -110,13 +110,13 @@ describe("WeeklyCalendar Component", () => {
     fireEvent.click(nextButton);
 
     // Now Jan 1 should NOT be visible anymore
-    expect(screen.queryByText("Wed, Jan 1")).not.toBeInTheDocument();
+    expect(screen.queryByText("Thu, Jan 1")).not.toBeInTheDocument();
   });
 
   it("moves backward when Prev is clicked", () => {
     const longProps = {
       ...baseProps,
-      latestEndDate: "2025-01-10",
+      latestEndDate: "2026-01-10",
     };
 
     render(<WeeklyCalendar {...longProps} />);
@@ -128,6 +128,6 @@ describe("WeeklyCalendar Component", () => {
     expect(prevButton).not.toBeDisabled();
 
     fireEvent.click(prevButton); // go back
-    expect(screen.getByText("Wed, Jan 1")).toBeInTheDocument();
+    expect(screen.getByText("Thu, Jan 1")).toBeInTheDocument();
   });
 });
