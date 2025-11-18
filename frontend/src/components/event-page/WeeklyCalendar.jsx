@@ -126,6 +126,7 @@ export default function WeeklyCalendar({
                   weekday: "short",
                   month: "short",
                   day: "numeric",
+                  timeZone: "UTC",
                 })}
               </div>
             ))}
