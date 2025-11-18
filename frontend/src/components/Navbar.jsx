@@ -1,11 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
 import calendarLogo from "@/images/calendar.png";
-//import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const { isAuthenticated, showAuthenticationModal, signOut } = useAuth();
-  //const location = useLocation();
-  //const path = location.pathname; 
   return (
     <div className="navbar bg-base-100 sticky top-0 z-50 left-0 w-full shadow-sm">
       <div className="mx-8 flex w-full justify-between">
