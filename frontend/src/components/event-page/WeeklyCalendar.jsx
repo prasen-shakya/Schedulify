@@ -9,8 +9,10 @@ export default function WeeklyCalendar({
   participants,
   setHighlightedParticipant,
 }) {
+  // Index of the first visible day in the week array
   const [startIndex, setStartIndex] = useState(0);
 
+  // How many days are visible at once
   const [visibleDays, setVisibleDays] = useState(5);
 
   // Update visible days based on screen size
@@ -31,6 +33,7 @@ export default function WeeklyCalendar({
     updateVisibleDays();
   }, []);
 
+  // Build an array of dates from earliestStartDate to latestEndDate
   const weekdays = useMemo(() => {
     if (!earliestStartDate || !latestEndDate) return [];
     const start = new Date(earliestStartDate);
@@ -42,6 +45,7 @@ export default function WeeklyCalendar({
     return days;
   }, [earliestStartDate, latestEndDate]);
 
+  // Build an array of integer hours [startHour, startHour+1, ... endHour-1]
   const hours = useMemo(() => {
     if (!earliestStartTime || !latestEndTime) return [];
     const start = parseInt(earliestStartTime.split(":")[0]);
@@ -49,6 +53,7 @@ export default function WeeklyCalendar({
     return Array.from({ length: end - start }, (_, i) => start + i);
   }, [earliestStartTime, latestEndTime]);
 
+  // Precompute availability into a map: "YYYY-MM-DD-HH" -> [userId, ...]
   const availabilityMap = useMemo(() => {
     const map = {};
 
@@ -60,6 +65,7 @@ export default function WeeklyCalendar({
         slot.times.forEach((timeSlot) => {
           const start = parseInt(timeSlot.startTime.split(":")[0], 10);
           const end = parseInt(timeSlot.endTime.split(":")[0], 10);
+          // Mark each hour in [start, end) as available for this user
           for (let hour = start; hour < end; hour++) {
             const key = `${date}-${hour}`;
             if (!map[key]) map[key] = [];
@@ -72,30 +78,36 @@ export default function WeeklyCalendar({
     return map;
   }, [availabilityData]);
 
+  // Advance visible window forward
   const handleNext = () => {
     if (startIndex + visibleDays < weekdays.length) {
       setStartIndex(startIndex + visibleDays);
     }
   };
 
+  // Move visible window backward
   const handlePrev = () => {
     if (startIndex - visibleDays >= 0) {
       setStartIndex(startIndex - visibleDays);
     }
   };
 
+  // Slice of days currently shown
   const currentDays = weekdays.slice(startIndex, startIndex + visibleDays);
 
   return (
     <div className="max-w-full flex-1 overflow-auto px-1 xl:max-w-3/4">
       <div className="flex max-w-full min-w-fit items-start gap-0">
         <div className="flex-1">
+          {/* Header row: navigation + day labels */}
           <div
             className="bg-base-100 grid scale-100 text-[0.7rem]"
+            // First column is the time gutter, rest are equal-width day columns
             style={{
               gridTemplateColumns: `minmax(2.5rem, auto) repeat(${currentDays.length > visibleDays ? visibleDays : currentDays.length}, 1fr)`,
             }}
           >
+            {/* Previous button */}
             <div className="flex w-10 justify-center">
               <button
                 className="btn btn-ghost btn-sm"
@@ -117,6 +129,7 @@ export default function WeeklyCalendar({
               </button>
             </div>
 
+            {/* Day headers */}
             {currentDays.map((day) => (
               <div
                 key={day.toISOString()}
@@ -132,6 +145,7 @@ export default function WeeklyCalendar({
             ))}
           </div>
 
+          {/* Hour rows */}
           {hours.map((hour) => (
             <div
               key={hour}
@@ -140,6 +154,7 @@ export default function WeeklyCalendar({
                 gridTemplateColumns: `minmax(2.5rem, auto) repeat(${currentDays.length > visibleDays ? visibleDays : currentDays.length}, 1fr)`,
               }}
             >
+              {/* Time gutter cell */}
               <div className="border-base-300 w-10 pr-1">
                 {new Date(0, 0, 0, hour).toLocaleTimeString("en-US", {
                   hour: "numeric",
@@ -147,7 +162,9 @@ export default function WeeklyCalendar({
                 })}
               </div>
 
+              {/* Availability cells per day */}
               {currentDays.map((day, index) => {
+                // Key used to find users available on this date-hour cell
                 const availablePeople =
                   availabilityMap[`${day.toISOString().split("T")[0]}-${hour}`];
 
@@ -161,10 +178,12 @@ export default function WeeklyCalendar({
                     <div
                       key={`${day.toISOString()}-${hour}`}
                       className={`border-base-300 h-[30px] border-r border-b ${index == 0 ? "border-l" : ""}`}
+                      // Highlight participants on hover
                       onMouseEnter={() =>
                         setHighlightedParticipant(availablePeople)
                       }
                       onMouseLeave={() => setHighlightedParticipant(null)}
+                      // Shade intensity based on fraction of participants available
                       style={
                         isAvailable
                           ? {
@@ -180,6 +199,7 @@ export default function WeeklyCalendar({
           ))}
         </div>
 
+        {/* Next button column */}
         <div className="flex w-10 justify-center">
           <button
             className="btn btn-ghost btn-sm"
