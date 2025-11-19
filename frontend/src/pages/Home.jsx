@@ -1,6 +1,6 @@
 import EventModal from "@/components/home/EventModal";
 import { useAuth } from "@/contexts/AuthContext";
-import exampleImg from '../images/example.jpg';
+import exampleImg from '../images/demo.gif';
 
 export const Home = () => {
   const { requireAuth } = useAuth();
