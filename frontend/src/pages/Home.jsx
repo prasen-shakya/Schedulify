@@ -1,6 +1,6 @@
 import EventModal from "@/components/home/EventModal";
 import { useAuth } from "@/contexts/AuthContext";
-import exampleImg from '../images/demo.gif';
+import demoGif from '../images/demo.gif';
 
 export const Home = () => {
   const { requireAuth } = useAuth();
@@ -60,8 +60,8 @@ export const Home = () => {
         <div className="hero bg-base-200 min-h-screen" id="how">
           <div className="hero-content flex-col lg:flex-row-reverse"> 
             <img
-              src={exampleImg}
-              className="max-w-[50vw] h-auto"
+              src={demoGif} alt="Demonstration of event page"
+              className="max-w-full h-auto"
             />
             <div className="min-w-[25vw]">
               <h1 className="text-5xl font-bold">How it works</h1>
