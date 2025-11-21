@@ -4,7 +4,7 @@
   "description": "Schedulifyis a web application that simplifies scheduling group events",
   "scripts": {
     "frontend": "cd frontend && npm run dev",
-    "backend": "cd backend && node --watch app.js",
+    "backend": "cd backend && node --watch server.js",
     "install:backend": "cd backend && npm install",
     "install:frontend": "cd frontend && npm install",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
