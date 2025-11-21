@@ -1,7 +1,7 @@
 /**
  * MOCK DATABASE
  */
-jest.mock("../database", () => {
+jest.mock("../config/database", () => {
     // Track USERS for tests — this simulates your database table.
     let users = [];
 
@@ -49,7 +49,7 @@ jest.mock("bcrypt", () => ({
 }));
 
 const request = require("supertest");
-const { closePool } = require("../database");
+const { closePool } = require("../config/database");
 const app = require("../app.js");
 
 

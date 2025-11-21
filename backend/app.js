@@ -3,7 +3,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { getDbConnection, closePool } = require("./database");
+const { getDbConnection, closePool } = require("./config/database");
 const { uuid } = require("uuidv4");
 const path = require("path");
 
