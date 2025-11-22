@@ -18,30 +18,34 @@ app.use(cookieParser());
 app.use(express.json());
 
 if (process.env.NODE_ENV === "production") {
-    app.use(express.static(buildPath));
+  app.use(express.static(buildPath));
 
-    app.get(/(.*)/, (req, res) => {
-        res.sendFile(path.join(buildPath, "index.html"));
-    });
+  app.get(/(.*)/, (req, res) => {
+    res.sendFile(path.join(buildPath, "index.html"));
+  });
 } else {
-    app.use(
-        cors({
-            origin: "http://localhost:5173",
-            methods: ["GET", "POST", "PUT", "DELETE"],
-            credentials: true,
-        })
-    );
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      credentials: true,
+    })
+  );
 }
 
 app.use("/api", authRoutes);
 app.use("/api", eventRoutes);
 app.use("/api", availabilityRoutes);
 
-app.listen(port, () => {
+if (process.env.NODE_ENV !== "testing") {
+  app.listen(port, () => {
     console.log(`Listening on port ${port}`);
-});
+  });
+}
 
 process.on("SIGINT", async () => {
-    await closePool();
-    process.exit(0);
+  await closePool();
+  process.exit(0);
 });
+
+module.exports = app;
