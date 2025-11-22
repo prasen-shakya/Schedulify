@@ -20,25 +20,6 @@ No more endless back-and-forth messages — with Schedulify you can:
 
 ---
 
-## 🧩 Project Structure
-
-```
-schedulify/
-├── backend/
-│   ├── app.js
-│   ├── routes/
-│   ├── models/
-│   └── ...
-├── frontend/
-│   ├── src/
-│   ├── vite.config.js
-│   └── ...
-├── package.json
-└── README.md
-```
-
----
-
 ## 💻 Local Development
 
 ### 1️⃣ Prerequisites
@@ -117,7 +98,7 @@ npm run dev
 
 This will use **concurrently** to start both servers:
 
-- **Backend:** Node.js with automatic reload (`node --watch app.js`)
+- **Backend:** Node.js with automatic reload (`node --watch server.js`)
 - **Frontend:** Vite development server
 
 You can also run them individually:
