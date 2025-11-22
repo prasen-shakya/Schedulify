@@ -2,11 +2,10 @@
  * MOCK DATABASE
  */
 jest.mock("../config/database", () => {
-  // Track USERS for tests — this simulates your database table.
+  // Track USERS for tests
   let users = [];
 
   const mockQuery = jest.fn(async (sql, params) => {
-    // ----- SELECT * FROM User WHERE Email = ? -----
     if (sql.includes("FROM User WHERE Email = ?")) {
       const email = params[0];
       const found = users.filter((u) => u.Email === email);
@@ -85,7 +84,6 @@ describe("User Login/Registration", () => {
   describe("POST /login", () => {
     // This is for user login tests
 
-    // What happens when you give an invalid username.
     test("Should return 400 because email doesn't exists.", async () => {
       const res = await request(app).post("/api/login").set("Content-Type", "application/json").send({
         email: "johnDoe@gmail.com",
@@ -205,7 +203,6 @@ describe("Tests for User actions: Creating Events, Updating Availability.", () =
   });
 });
 
-// Close the HTTP server *if* it was started
 afterAll(async () => {
   await closePool(); // Closes all DB connections
 });
