@@ -10,6 +10,8 @@ No more endless back-and-forth messages — with Schedulify you can:
 - 📆 Collect availability from everyone in one place
 - ⏱️ Automatically find the best overlapping time to meet
 
+![demo](https://github.com/user-attachments/assets/f3281ea5-0466-4e7e-84c5-08114f37ade8)
+
 ---
 
 ## ⚙️ Tech Stack
