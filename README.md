@@ -1,113 +1,88 @@
-# 📅 Schedulify
+# Schedulify
 
-## 🚀 Overview
+## Overview
 
-**Schedulify** is a web application that simplifies scheduling group events.  
-No more endless back-and-forth messages — with Schedulify you can:
+Schedulify is a web application for planning group events without the usual back-and-forth.
 
-- ✅ Create events with details like name, description, and time frame
-- 🤝 Share the event with participants via a unique link
-- 📆 Collect availability from everyone in one place
-- ⏱️ Automatically find the best overlapping time to meet
+- Create events with a name, description, and time window
+- Share an event link with participants
+- Collect availability in one place
+- Find overlapping times more easily
 
 ![demo](https://github.com/user-attachments/assets/f3281ea5-0466-4e7e-84c5-08114f37ade8)
 
----
+## Tech Stack
 
-## ⚙️ Tech Stack
+- Frontend: React + Vite
+- Backend: Node.js + Express
+- Database: SQLite
 
-- **Frontend:** React + Vite
-- **Backend:** Node.js + Express
-- **Database:** MySQL
+## Local Development
 
----
+### Prerequisites
 
-## 💻 Local Development
+- Node.js v22 or later
+- npm
 
-### 1️⃣ Prerequisites
+No external database server is required.
 
-Before running this project, make sure you have installed:
-
-- [Node.js](https://nodejs.org/) (v18 or later)
-- [npm](https://www.npmjs.com/)
-- [MySQL](https://www.mysql.com/)
-
-Before running the app, create a database using the schema file located in the db directory.
-
----
-
-### 2️⃣ Clone the Repository
+### Clone the Repository
 
 ```bash
 git clone https://github.com/prasen-shakya/Schedulify
-cd schedulify
+cd Schedulify
 ```
 
----
+### Install Dependencies
 
-### 3️⃣ Install Dependencies
-
-**Install all dependencies**:
-
-From the project root directory:
+From the project root:
 
 ```bash
 npm run install:all
 ```
 
----
+### Configure Environment Variables
 
-### 4️⃣ Configure Environment Variables
-
-Create a `.env` file inside the **backend** folder with the following content:
+Create `backend/.env`:
 
 ```bash
-DB_HOST=127.0.0.1
-DB_PORT=3307
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=your_database_name
+SQLITE_DB_PATH=./data/schedulify.db
 
 PORT=3000
-JWT_TOKEN=your_token
+NODE_ENV=development
+JWT_SECRET=your_jwt_secret
 ```
 
-Create a `.env` file inside the **frontend** folder with the following content:
+Create `frontend/.env`:
 
 ```bash
 VITE_API_BASE_URL=http://localhost:3000/api
 ```
 
----
+### Run the Application
 
-### 5️⃣ Set Up SSH Tunnel to Remote Database
-
-Run this command from your local machine:
-
-```bash
-ssh -L 3307:127.0.0.1:3306 YOUR_USERNAME@blue.cs.sonoma.edu
-```
-
-Keep this terminal open while working, or run it in the background.
-
-### 6️⃣ Run the Application
-
-From the project root directory:
+From the project root:
 
 ```bash
 npm run dev
 ```
 
-This will use **concurrently** to start both servers:
+This starts:
 
-- **Backend:** Node.js with automatic reload (`node --watch server.js`)
-- **Frontend:** Vite development server
+- Backend: `node --watch server.js`
+- Frontend: Vite dev server
 
-You can also run them individually:
+You can also run each service separately:
 
 ```bash
 npm run backend
 npm run frontend
 ```
 
----
+## Database Notes
+
+- The SQLite database is created automatically on first backend startup.
+- The default database path is `./data/schedulify.db` at the project root.
+- The backend loads its environment from `backend/.env` explicitly, so the database path stays stable no matter where you start the server from.
+- The schema is initialized from `db/schema.sql`.
+- `data/schedulify.db` is generated local state and is ignored by Git.

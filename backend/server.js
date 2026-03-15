@@ -1,8 +1,9 @@
-require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+
+require("dotenv").config({ path: path.resolve(__dirname, ".env") });
 const { closePool } = require("../backend/config/database");
 
 const authRoutes = require("./routes/authRoutes");
@@ -37,7 +38,7 @@ app.use("/api", authRoutes);
 app.use("/api", eventRoutes);
 app.use("/api", availabilityRoutes);
 
-if (process.env.NODE_ENV !== "testing") {
+if (!["test", "testing"].includes(process.env.NODE_ENV)) {
   app.listen(port, () => {
     console.log(`Listening on port ${port}`);
   });

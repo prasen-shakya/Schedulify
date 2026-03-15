@@ -25,3 +25,7 @@ dist-ssr
 
 # Environment files
 *.env
+
+# Local SQLite database
+/data/
+*.db

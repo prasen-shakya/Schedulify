@@ -14,13 +14,15 @@ async function insertAvailability(userID, eventID, availabilitySlots) {
     // get connection to database
     const pool = await getDbConnection();
     const connection = await pool.getConnection();
-    await connection.beginTransaction();
 
     if (availabilitySlots.length === 0) {
+        connection.release();
         return "availbilitySlots is empty, inserted nothing.";
     }
 
     try {
+        await connection.beginTransaction();
+
         for (let i = 0; i < availabilitySlots.length; i++) {
             const { day, start, end } = availabilitySlots[i];
 
@@ -76,11 +78,13 @@ Function that deletes availability
 - takes in eventID and userID
 - makes query to delete availability of specific user from database
  */
-async function deleteAvailability(eventID, userID) {
+async function deleteAvailability(eventID, userID, removeParticipant = false) {
+    let connection;
+
     try {
         // get connection to database
         const pool = await getDbConnection();
-        const connection = await pool.getConnection();
+        connection = await pool.getConnection();
         await connection.beginTransaction();
 
         //only one query to delete all
@@ -89,14 +93,24 @@ async function deleteAvailability(eventID, userID) {
             [eventID, userID]
         );
 
-        //remove from event participants
-        const [removed] = await connection.query("DELETE FROM EventParticipants WHERE EventID = ? AND UserID = ?", [eventID, userID]);
+        if (removeParticipant) {
+            await connection.query(
+                "DELETE FROM EventParticipants WHERE EventID = ? AND UserID = ?",
+                [eventID, userID]
+            );
+        }
+
+        await connection.commit();
 
         const message = "All availabilities successfully deleted.";
 
         connection.release();
         return message;
     } catch (error) {
+        if (connection) {
+            await connection.rollback();
+            connection.release();
+        }
         return error.message;
     }
 }
@@ -152,4 +166,3 @@ module.exports = {
     deleteAvailability,
     orderAvailabilitiesByUser,
 };
-

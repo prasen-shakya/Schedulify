@@ -1,53 +1,49 @@
-CREATE TABLE User (
-    UserID INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(255) NOT NULL,
-    Email VARCHAR(255) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL
+CREATE TABLE IF NOT EXISTS User (
+    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT NOT NULL,
+    Email TEXT UNIQUE NOT NULL,
+    Password TEXT NOT NULL
 );
 
-CREATE TABLE Event (
-    EventID VARCHAR(255) PRIMARY KEY,
-    OrganizerID INT NOT NULL,
-    Name VARCHAR(255) NOT NULL,
-    Description VARCHAR(1000), 
-    StartDate DATE NOT NULL,
-    EndDate DATE NOT NULL,
-    StartTime TIME NOT NULL,
-    EndTime TIME NOT NULL,
-    
+CREATE TABLE IF NOT EXISTS Event (
+    EventID TEXT PRIMARY KEY,
+    OrganizerID INTEGER NOT NULL,
+    Name TEXT NOT NULL,
+    Description TEXT,
+    StartDate TEXT NOT NULL,
+    EndDate TEXT NOT NULL,
+    StartTime TEXT NOT NULL,
+    EndTime TEXT NOT NULL,
     CHECK (StartDate <= EndDate),
-	CHECK (StartTime <= EndTime),
+    CHECK (StartTime <= EndTime),
     FOREIGN KEY (OrganizerID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
-CREATE TABLE Availability (
-    AvailabilityID INT PRIMARY KEY AUTO_INCREMENT,
-    UserID INT NOT NULL,
-    EventID VARCHAR(255) NOT NULL,
-    Date DATE NOT NULL,
-    StartTime TIME NOT NULL,
-    EndTime TIME NOT NULL,
-	
-    CHECK(StartTime <= EndTime),
+CREATE TABLE IF NOT EXISTS Availability (
+    AvailabilityID TEXT PRIMARY KEY,
+    UserID INTEGER NOT NULL,
+    EventID TEXT NOT NULL,
+    Date TEXT NOT NULL,
+    StartTime TEXT NOT NULL,
+    EndTime TEXT NOT NULL,
+    CHECK (StartTime <= EndTime),
     FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
     FOREIGN KEY (EventID) REFERENCES Event(EventID) ON DELETE CASCADE
 );
 
-CREATE TABLE EventParticipants (
-    EventID VARCHAR(255) NOT NULL,
-    UserID INT NOT NULL,
-	
+CREATE TABLE IF NOT EXISTS EventParticipants (
+    EventID TEXT NOT NULL,
+    UserID INTEGER NOT NULL,
     PRIMARY KEY (EventID, UserID),
     FOREIGN KEY (EventID) REFERENCES Event(EventID) ON DELETE CASCADE,
     FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
 );
 
-CREATE TABLE EventDecision (
-    EventID VARCHAR(255) PRIMARY KEY,
-    FinalDate DATE NOT NULL,
-    FinalStartTime TIME NOT NULL,
-    FinalEndTime TIME NOT NULL,
-	
-    CHECK(FinalStartTime <= FinalEndTime),
+CREATE TABLE IF NOT EXISTS EventDecision (
+    EventID TEXT PRIMARY KEY,
+    FinalDate TEXT NOT NULL,
+    FinalStartTime TEXT NOT NULL,
+    FinalEndTime TEXT NOT NULL,
+    CHECK (FinalStartTime <= FinalEndTime),
     FOREIGN KEY (EventID) REFERENCES Event(EventID) ON DELETE CASCADE
 );

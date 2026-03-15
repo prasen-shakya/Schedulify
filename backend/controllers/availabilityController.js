@@ -39,15 +39,22 @@ exports.updateAvailability = async (req, res) => {
             [eventID, userID]
         );
 
-        // if no duplicates, insert into EventParticipants (participant is not a part of the event)
+        if (availabilitySlots.length === 0) {
+            const deleteResponse = await deleteAvailability(eventID, userID, true);
+            return res.status(200).json({ message: deleteResponse });
+        }
+
+        // Ensure the participant exists for the event.
         if (existing.length === 0) {
             await connection.query(
                 "INSERT INTO EventParticipants (EventID, UserID) VALUES (?, ?)",
                 [eventID, userID]
             );
-        } else {
-            await deleteAvailability(eventID, userID);
         }
+
+        // Replace any previous availability for this participant without
+        // removing them from the event's participant list.
+        await deleteAvailability(eventID, userID);
 
         //insert the new availblity given.
         const insertResponse = await insertAvailability(
